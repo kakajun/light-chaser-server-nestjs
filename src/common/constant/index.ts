@@ -21,13 +21,6 @@ export enum AppExceptionCodeMsg {
   // 其他错误码和消息
 }
 
-export enum ImageType {
-  BMP = '.bmp',
-  JPG = '.jpg',
-  JPEG = '.jpeg',
-  PNG = '.png',
-  GIF = '.gif',
-}
+export const ImageType = ['.bmp', '.jpg', '.jpeg', '.png', '.gif']
 
-// src/global/image-size.constant.ts
-export const IMAGE_SIZE = 1024 * 1024 * 5; // 5MB
+export const IMAGE_SIZE = 1024 * 1024 * 5 // 5MB

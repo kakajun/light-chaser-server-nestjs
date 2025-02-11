@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common'
-import { DbExecutorService } from './project.service'
+import { ProjectService } from './project.service'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { DbExecutorController } from './project.controller'
-import { DbExecutorEntity } from './entities/project.entity'
+import { ProjectController } from './project.controller'
+import { ProjectEntity } from './entities/project.entity'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([DbExecutorEntity])],
-  controllers: [DbExecutorController],
-  providers: [DbExecutorService],
+  imports: [TypeOrmModule.forFeature([ProjectEntity])],
+  controllers: [ProjectController],
+  providers: [ProjectService],
 })
-export class DbExecutorModule {}
+export class ProjectModule {}

@@ -1,22 +1,27 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common'
+import { Injectable, HttpException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { ProjectEntity } from '../entity/project.entity'
-import { PageParamEntity } from '../entity/page-param.entity'
-import { Page } from '../entity/page.entity' // 假设你有一个Page实体类来处理分页
-import { MultipartFile } from 'fastify-multer/lib/interfaces'
-
-import { GlobalVariables } from '../global/global-variables' // 假设你有一个GlobalVariables类
-
+import { ProjectEntity } from './entities/project.entity'
+import { PageParam } from './project.controller'
+import { ResultData } from '@/common/utils/result'
+import { IMAGE_SIZE, ImageType } from '@/common/constant/index' // 假设你有一个GlobalVariables类
+import { ConfigService } from '@nestjs/config'
 import { join } from 'path'
-import { v4 as uuidv4 } from 'uuid'
+import { GenerateUUID } from '@/common/utils/index'
+import * as fs from 'fs' // 导入fs模块
 
 @Injectable()
 export class ProjectService {
+  private readonly projectResourcePath: string
+  private readonly coverPath: string
   constructor(
     @InjectRepository(ProjectEntity)
     private readonly projectRepository: Repository<ProjectEntity>,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.projectResourcePath = this.configService.get('PROJECT_RESOURCE_PATH')
+    this.coverPath = this.configService.get('COVER_PATH')
+  }
 
   async updateProject(project: ProjectEntity): Promise<boolean> {
     if (!project || !project.id) return false
@@ -66,12 +71,12 @@ export class ProjectService {
     return await this.projectRepository.findOne({ where: { id } })
   }
 
-  async uploadCover(project: ProjectEntity): Promise<string> {
+  async uploadCover(project, file: Express.Multer.File) {
     if (!project || !project.id || !project.file) {
       throw new HttpException('参数错误', 500)
     }
-    const file = project.file as MultipartFile
-    if (file.size > GlobalVariables.IMAGE_SIZE) {
+
+    if (file.size > IMAGE_SIZE) {
       throw new HttpException('图片大小不能超过5M', 500)
     }
     const fileName = file.originalname
@@ -79,7 +84,7 @@ export class ProjectService {
       throw new HttpException('图片名称错误', 500)
     }
     const suffix = fileName.substring(fileName.lastIndexOf('.'))
-    if (!GlobalVariables.IMAGE_TYPE.includes(suffix)) {
+    if (!ImageType.includes(suffix)) {
       throw new HttpException('图片格式不支持', 500)
     }
     const existingProject = await this.projectRepository.findOne({
@@ -87,17 +92,18 @@ export class ProjectService {
     })
     if (existingProject && existingProject.cover) {
       const oldFileName = existingProject.cover
-      const oldAbsolutePath = join(GlobalVariables.PROJECT_RESOURCE_PATH, GlobalVariables.COVER_PATH, oldFileName)
-      const oldFile = new File(oldAbsolutePath)
-      if (oldFile.exists()) {
-        const deleteResult = oldFile.delete()
-        if (!deleteResult) {
+
+      const oldAbsolutePath = join(this.projectResourcePath, this.coverPath, oldFileName)
+      if (fs.existsSync(oldAbsolutePath)) {
+        try {
+          await fs.promises.unlink(oldAbsolutePath) // 使用fs.promises.unlink异步删除文件
+        } catch (error) {
           throw new HttpException('旧图片删除失败', 500)
         }
       }
     }
-    const newFileName = `${uuidv4().replace(/-/g, '')}${suffix}`
-    const uploadDir = join(GlobalVariables.PROJECT_RESOURCE_PATH, GlobalVariables.COVER_PATH)
+    const newFileName = `${GenerateUUID()}${suffix}`
+    const uploadDir = join(this.projectResourcePath, this.coverPath)
     if (!fs.existsSync(uploadDir)) {
       const mkdirsResult = fs.mkdirSync(uploadDir, { recursive: true })
       if (!mkdirsResult) {
@@ -105,33 +111,36 @@ export class ProjectService {
       }
     }
     const destFile = join(uploadDir, newFileName)
-    await file.mv(destFile)
+    // await file.mv(destFile)
+    fs.writeFileSync(destFile, file.buffer)
     project.cover = newFileName
     project.updateTime = new Date()
     await this.projectRepository.update(project.id, project)
-    return `${GlobalVariables.COVER_PATH}${newFileName}`
+    return ResultData.ok({
+      url: `${this.coverPath}${newFileName}`,
+    })
   }
 
-  async getProjectPageList(pageParam: PageParamEntity): Promise<Page<ProjectEntity>> {
-    if (!pageParam) return new Page<ProjectEntity>(0, 0, [])
-    const current = pageParam.current || 1
-    const size = pageParam.size || 10
-    const [projects, total] = await this.projectRepository.findAndCount({
-      where: {
-        deleted: 0,
-        ...(pageParam.searchValue ? { name: Like(`%${pageParam.searchValue}%`) } : {}),
-      },
-      select: ['id', 'name', 'des', 'cover'],
-      skip: (current - 1) * size,
-      take: size,
-    })
-    const pageData = new Page<ProjectEntity>(current, size, projects, total)
+  async getProjectPageList(pageParam: PageParam) {
+    const entity = this.projectRepository
+      .createQueryBuilder('entity')
+      .where('entity.deleted = :deleted', { deleted: 0 })
+
+    if (pageParam.searchValue) {
+      entity.andWhere('entity.name LIKE :searchValue', { searchValue: `%${pageParam.searchValue}%` })
+    }
+    entity.select(['entity.id', 'entity.name', 'entity.des', 'entity.cover'])
+    const [list, total] = await entity.getManyAndCount()
     // 补全封面的完整路径
-    for (const projectEntity of pageData.records) {
+    for (const projectEntity of list) {
       if (projectEntity.cover) {
-        projectEntity.cover = `${GlobalVariables.COVER_PATH}${projectEntity.cover}`
+        projectEntity.cover = `${this.coverPath}${projectEntity.cover}`;
       }
     }
-    return pageData
+
+    return ResultData.ok({
+      list,
+      total,
+    })
   }
 }

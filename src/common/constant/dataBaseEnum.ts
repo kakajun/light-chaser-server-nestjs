@@ -3,6 +3,7 @@ export enum DataBaseEnum {
   PostgresSQL = 1,
   ORACLE = 2,
   SQLServer = 3,
+  Sqlite = 4,
 }
 
 export enum FileTypeEnum {

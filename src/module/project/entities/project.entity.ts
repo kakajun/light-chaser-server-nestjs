@@ -27,7 +27,4 @@ export class ProjectEntity extends BaseEntity {
   @ApiProperty({ description: '封面图片路径', example: '/path/to/cover.jpg' })
   @Column({ nullable: true })
   cover: string
-
-  // 文件上传字段通常不会直接存储在数据库中
-  // file: MultipartFile;
 }

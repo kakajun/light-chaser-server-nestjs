@@ -51,6 +51,7 @@
     "dayjs": "^1.11.10",
     "uuid": "^9.0.1",
     "lodash": "^4.17.21",
+    "cron": "^3.5.0",
     "winston": "^3.17.0",
     "useragent": "^2.3.0",
     "winston-daily-rotate-file": "^5.0.0"

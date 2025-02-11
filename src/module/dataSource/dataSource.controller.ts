@@ -1,4 +1,6 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common'
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger'
+
 import { DatasourceService } from './datasource.service'
 import { DatasourceEntity } from './entities/datasource.entity'
 import { ResultData } from '@/common/utils/result'
@@ -9,6 +11,7 @@ export interface PageParam {
   searchValue: string
 }
 
+@ApiTags('配置数据')
 @Controller('api/datasource')
 export class DataSourceController {
   constructor(private readonly datasourceService: DatasourceService) {}
