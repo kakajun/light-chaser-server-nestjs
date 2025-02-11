@@ -110,12 +110,12 @@ export function Uniq(list: Array<number | string>) {
  * 分页
  * @param data
  * @param pageSize
- * @param pageNum
+ * @param current
  * @returns
  */
-export function Paginate(data: { list: Array<any>; pageSize: number; pageNum: number }, filterParam: any) {
+export function Paginate(data: { list: Array<any>; pageSize: number; current: number }, filterParam: any) {
   // 检查 pageSize 和 pageNumber 的合法性
-  if (data.pageSize <= 0 || data.pageNum < 0) {
+  if (data.pageSize <= 0 || data.current < 0) {
     return []
   }
 
@@ -137,7 +137,7 @@ export function Paginate(data: { list: Array<any>; pageSize: number; pageNum: nu
   }
 
   // 获取指定页的数据
-  const pageData = arrayData.slice((data.pageNum - 1) * data.pageSize, data.pageNum * data.pageSize)
+  const pageData = arrayData.slice((data.current - 1) * data.pageSize, data.current * data.pageSize)
 
   return pageData
 }

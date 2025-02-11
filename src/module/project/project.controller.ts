@@ -2,14 +2,13 @@ import { Controller, Post, Get, Body, Param, UseInterceptors, UploadedFile } fro
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ProjectService } from './project.service'
 import { ProjectEntity } from './entities/project.entity'
-import { ResultData } from '@/common/utils/result'
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger'
-
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiBody, ApiTags } from '@nestjs/swagger'
+import { ListProjectDto, CreatProjectDto } from './dto/project.dto'
 export interface PageParam {
   size: number
   current: number
   searchValue: string
-  file: any
+  // file: any
 }
 
 @ApiTags('工程页面')
@@ -20,9 +19,9 @@ export class ProjectController {
   @ApiOperation({ summary: '页面列表' })
   @ApiBearerAuth()
   @Post('pageList')
-  async getProjectPageList(@Body() pageParam: PageParam) {
-    const pageData = await this.projectService.getProjectPageList(pageParam)
-    return ResultData.ok(pageData)
+  @ApiBody({ type: ListProjectDto, description: '根据项目名称搜索所有' })
+  async getProjectPageList(@Body() pageParam: ListProjectDto) {
+    return await this.projectService.getProjectPageList(pageParam)
   }
 
   @ApiOperation({ summary: '通过ID获取指定页面数据' })
@@ -35,8 +34,7 @@ export class ProjectController {
     type: String,
   })
   async getProjectData(@Param('id') id: number) {
-    const data = await this.projectService.getProjectData(id)
-    return ResultData.ok(data)
+    return await this.projectService.getProjectData(id)
   }
 
   @ApiOperation({ summary: '通过ID获取指定页面信息' })
@@ -49,24 +47,21 @@ export class ProjectController {
     type: String,
   })
   async getProjectInfo(@Param('id') id: number) {
-    const project = await this.projectService.getProjectInfo(id)
-    return ResultData.ok(project)
+    return await this.projectService.getProjectInfo(id)
   }
 
   @ApiOperation({ summary: '更新页面信息' })
   @ApiBearerAuth()
   @Post('update')
   async updateProject(@Body() project: ProjectEntity) {
-    const result = await this.projectService.updateProject(project)
-    return ResultData.ok(result)
+    return await this.projectService.updateProject(project)
   }
 
   @ApiOperation({ summary: '创建页面' })
   @ApiBearerAuth()
   @Post('create')
-  async createProject(@Body() project: ProjectEntity) {
-    const id = await this.projectService.createProject(project)
-    return ResultData.ok(id)
+  async createProject(@Body() project: CreatProjectDto) {
+    return await this.projectService.createProject(project)
   }
 
   @ApiBearerAuth()
@@ -78,8 +73,7 @@ export class ProjectController {
     type: String,
   })
   async deleteProject(@Param('id') id: number) {
-    const result = await this.projectService.deleteProject(id)
-    return ResultData.ok(result)
+    return await this.projectService.deleteProject(id)
   }
 
   @ApiBearerAuth()
@@ -91,15 +85,13 @@ export class ProjectController {
     type: String,
   })
   async copyProject(@Param('id') id: number) {
-    const newId = await this.projectService.copyProject(id)
-    return ResultData.ok(newId)
+    return await this.projectService.copyProject(id)
   }
 
   @ApiBearerAuth()
   @Post('cover')
   @UseInterceptors(FileInterceptor('file'))
   async uploadCover(@Body() project: ProjectEntity, @UploadedFile() file: Express.Multer.File) {
-    const coverPath = await this.projectService.uploadCover(project, file)
-    return ResultData.ok(coverPath)
+    return await this.projectService.uploadCover(project, file)
   }
 }

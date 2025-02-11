@@ -2,9 +2,10 @@ import { Injectable, HttpException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { ProjectEntity } from './entities/project.entity'
+import { CreatProjectDto } from './dto/project.dto'
 import { PageParam } from './project.controller'
 import { ResultData } from '@/common/utils/result'
-import { IMAGE_SIZE, ImageType } from '@/common/constant/index' // 假设你有一个GlobalVariables类
+import { IMAGE_SIZE, ImageType } from '@/common/constant/index'
 import { ConfigService } from '@nestjs/config'
 import { join } from 'path'
 import { GenerateUUID } from '@/common/utils/index'
@@ -23,35 +24,39 @@ export class ProjectService {
     this.coverPath = this.configService.get('COVER_PATH')
   }
 
-  async updateProject(project: ProjectEntity): Promise<boolean> {
+  async updateProject(project: ProjectEntity) {
     if (!project || !project.id) return false
     project.updateTime = new Date()
     const result = await this.projectRepository.update(project.id, project)
-    return result.affected > 0
+    return result.affected > 0 ? ResultData.ok() : ResultData.fail(500, '更新失败')
   }
 
-  async getProjectData(id: number): Promise<string> {
+  async getProjectData(id: number) {
     if (!id) return null
     const project = await this.projectRepository.findOne({
       where: { id },
       select: ['dataJson'],
     })
-    return project ? project.dataJson : null
+    return ResultData.ok(project ? project.dataJson : null)
   }
 
-  async createProject(project: ProjectEntity): Promise<number> {
+  async createProject(project: CreatProjectDto) {
     if (!project) return null
+    const doc = await this.projectRepository.findOne({ where: { name: project.name } })
+    if (doc) {
+      throw new HttpException('工程名称重复', 401)
+    }
     const savedProject = await this.projectRepository.save(project)
-    return savedProject.id
+    return ResultData.ok(savedProject.id)
   }
 
-  async deleteProject(id: number): Promise<boolean> {
+  async deleteProject(id: number) {
     if (!id) return false
     const result = await this.projectRepository.delete(id)
-    return result.affected > 0
+    return result.affected > 0 ? ResultData.ok() : ResultData.fail(500, '删除失败')
   }
 
-  async copyProject(id: number): Promise<number> {
+  async copyProject(id: number) {
     if (!id) return null
     const project = await this.projectRepository.findOne({ where: { id } })
     if (!project) return null
@@ -63,12 +68,13 @@ export class ProjectService {
       updateTime: undefined,
     }
     const savedProject = await this.projectRepository.save(newProject)
-    return savedProject.id
+    return ResultData.ok(savedProject.id)
   }
 
-  async getProjectInfo(id: number): Promise<ProjectEntity> {
+  async getProjectInfo(id: number) {
     if (!id) return null
-    return await this.projectRepository.findOne({ where: { id } })
+    const data = await this.projectRepository.findOne({ where: { id } })
+    return ResultData.ok(data)
   }
 
   async uploadCover(project, file: Express.Multer.File) {
@@ -125,21 +131,23 @@ export class ProjectService {
     const entity = this.projectRepository
       .createQueryBuilder('entity')
       .where('entity.deleted = :deleted', { deleted: 0 })
-
     if (pageParam.searchValue) {
       entity.andWhere('entity.name LIKE :searchValue', { searchValue: `%${pageParam.searchValue}%` })
     }
     entity.select(['entity.id', 'entity.name', 'entity.des', 'entity.cover'])
+    entity.skip(pageParam.size * (pageParam.current - 1)).take(pageParam.size)
+
     const [list, total] = await entity.getManyAndCount()
     // 补全封面的完整路径
     for (const projectEntity of list) {
       if (projectEntity.cover) {
-        projectEntity.cover = `${this.coverPath}${projectEntity.cover}`;
+        projectEntity.cover = `${this.coverPath}${projectEntity.cover}`
       }
     }
 
     return ResultData.ok({
-      list,
+      ...pageParam,
+      records: list,
       total,
     })
   }

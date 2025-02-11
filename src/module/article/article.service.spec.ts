@@ -85,25 +85,25 @@ describe('ArticleService', () => {
   })
 
   describe('findAll', () => {
-  it('should return a list of articles', async () => {
-  const query = { pageNum: 1, pageSize: 10 };
-  const mockArticles = [{ id: 1, title: 'Test Article', delFlag: '0', content: 'XXX', createBy: 'bb', status: 0 }];
-  const mockCount = 1;
-  (articleRepository.createQueryBuilder as jest.Mock).mockReturnValue({
-    andWhere: jest.fn().mockReturnThis(), // 添加 andWhere 以支持条件查询
-    skip: jest.fn().mockReturnThis(),
-    take: jest.fn().mockReturnThis(),
-    getManyAndCount: jest.fn().mockResolvedValue([mockArticles, mockCount]),
-  });
+    it('should return a list of articles', async () => {
+      const query = { current: 1, pageSize: 10 }
+      const mockArticles = [{ id: 1, title: 'Test Article', delFlag: '0', content: 'XXX', createBy: 'bb', status: 0 }]
+      const mockCount = 1
+      ;(articleRepository.createQueryBuilder as jest.Mock).mockReturnValue({
+        andWhere: jest.fn().mockReturnThis(), // 添加 andWhere 以支持条件查询
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([mockArticles, mockCount]),
+      })
 
-  const result = await service.findAll(query);
-  expect(result).toEqual(
-    ResultData.ok({
-      list: mockArticles,
-      total: mockCount,
-    }),
-  );
-});
+      const result = await service.findAll(query)
+      expect(result).toEqual(
+        ResultData.ok({
+          list: mockArticles,
+          total: mockCount,
+        }),
+      )
+    })
   })
 
   describe('update', () => {

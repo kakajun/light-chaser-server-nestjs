@@ -53,7 +53,7 @@ export class ArticleService {
     if (query.status) {
       entity.andWhere('entity.status = :status', { status: query.status })
     }
-    entity.skip(query.pageSize * (query.pageNum - 1)).take(query.pageSize)
+    entity.skip(query.size * (query.current - 1)).take(query.size)
     const [list, total] = await entity.getManyAndCount()
 
     return ResultData.ok({
@@ -114,15 +114,15 @@ export class ArticleService {
    * @description: 通过查用户表查文章,代码多, 但是做了分页, 不查用户信息, 速度快
    * @param {string} userName
    * @param {number} page
-   * @param {number} pageSize
+   * @param {number} size
    */
-  async findArticlesByUserName(userName: string, page: number, pageSize: number) {
+  async findArticlesByUserName(userName: string, page: number, size: number) {
     const [articles, total] = await this.articleRepository
       .createQueryBuilder('article')
       .leftJoinAndSelect('article.user', 'user')
       .where('user.userName = :userName', { userName })
-      .skip((page - 1) * pageSize)
-      .take(pageSize)
+      .skip((page - 1) * size)
+      .take(size)
       .select([
         'article.id',
         'article.title',

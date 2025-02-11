@@ -3,7 +3,6 @@ import { ArticleService } from './article.service'
 import { Body, Controller, Request, Delete, Get, Param, Post, Put, Query } from '@nestjs/common'
 import { CreateArticleDto, UpdateArticleDto, ListArticleData } from './dto/article.dto'
 
-
 @ApiTags('文章')
 @Controller('articles')
 export class ArticleController {
@@ -95,7 +94,7 @@ export class ArticleController {
     type: String,
   })
   @ApiQuery({
-    name: 'pageNum',
+    name: 'current',
     required: false,
     description: '页码',
     example: 1,
@@ -111,7 +110,7 @@ export class ArticleController {
   @Get('user/:userName')
   async findArticlesByUserName(
     @Param('userName') userName: string,
-    @Query('pageNum') page: number = 1,
+    @Query('current') page: number = 1,
     @Query('pageSize') pageSize: number = 10,
   ) {
     console.log('Searching for userName:', userName) // 添加日志

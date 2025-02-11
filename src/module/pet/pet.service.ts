@@ -24,9 +24,9 @@ export class PetService {
     const qb = this.postsRepository.createQueryBuilder('post')
     qb.orderBy('post.create_time', 'DESC')
     const total = await qb.getCount()
-    const { pageNum = 1, pageSize = 10, ...params } = query
+    const { current = 1, pageSize = 10, ...params } = query
     qb.limit(pageSize)
-    qb.offset(pageSize * (pageNum - 1))
+    qb.offset(pageSize * (current - 1))
     const list = await qb.getMany()
     return ResultData.ok({
       list,

@@ -33,8 +33,8 @@ export class RedisService {
    * @param data
    * @returns
    */
-  async skipFind(data: { key: string; pageSize: number; pageNum: number }) {
-    const rawInfo = await this.client.lrange(data.key, (data.pageNum - 1) * data.pageSize, data.pageNum * data.pageSize)
+  async skipFind(data: { key: string; pageSize: number; current: number }) {
+    const rawInfo = await this.client.lrange(data.key, (data.current - 1) * data.pageSize, data.current * data.pageSize)
     return rawInfo
   }
   /**
