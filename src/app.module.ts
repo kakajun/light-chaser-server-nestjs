@@ -13,7 +13,7 @@ import { UploadModule } from './module/upload/upload.module'
 import { LoggerService } from './module/monitor/logger/logger.service'
 import { TimerService } from './timer/timer.service'
 import { TimerModule } from './timer/timer.module'
-import { DictModule } from './module/dict/dict.module'
+
 import { UserModule } from './module/user/user.module'
 import { AxiosModule } from './module/axios/axios.module'
 import { PetModule } from './module/pet/pet.module'
@@ -67,7 +67,6 @@ import { RoleModule } from './module/role/role.module'
     AuthModule,
     UploadModule,
     TimerModule,
-    DictModule,
     UserModule,
     AxiosModule,
     PetModule,
