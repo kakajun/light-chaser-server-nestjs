@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsString, IsNotEmpty, Length } from 'class-validator'
+import { PagingDto } from '@/common/dto/index'
 
 export class CreateDataSourceDto {
   @ApiProperty({ description: '数据源链接名称', example: 'MyDataSource' })
@@ -27,4 +28,9 @@ export class CreateDataSourceDto {
 
   @ApiProperty({ description: '数据源链接描述', example: 'This is a MySQL database', required: false })
   des?: string
+}
+
+export class ListDataSourcetDto extends PagingDto {
+  @ApiProperty({ description: '数据源名称', example: 'MyDataSource' })
+  searchValue?: string
 }

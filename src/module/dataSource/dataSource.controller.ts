@@ -2,14 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiBody, ApiTags } from '@nestjs/swagger'
 import { DataSourceService } from './dataSource.service'
 import { DataSourceEntity } from './entities/dataSource.entity'
-import { CreateDataSourceDto } from './dto/dataSource.dto'
+import { ListDataSourcetDto, CreateDataSourceDto } from './dto/dataSource.dto'
 import { ResultData } from '@/common/utils/result'
-
-export interface PageParam {
-  size: number
-  current: number
-  searchValue: string
-}
 
 @ApiTags('配置数据')
 @Controller('api/datasource')
@@ -35,7 +29,8 @@ export class DataSourceController {
   @ApiOperation({ summary: '分页页面列表' })
   @ApiBearerAuth()
   @Post('pageList')
-  async getDataSourcePageList(@Body() pageParam: PageParam) {
+  @ApiBody({ type: ListDataSourcetDto, description: '根据项目名称搜索所有' })
+  async getDataSourcePageList(@Body() pageParam: ListDataSourcetDto) {
     const datasources = await this.dataSourceService.getDataSourcePageList(pageParam)
     return ResultData.ok(datasources)
   }
@@ -53,7 +48,7 @@ export class DataSourceController {
   @Post('update')
   async updateDataSource(@Body() datasource: DataSourceEntity) {
     const result = await this.dataSourceService.updateDataSource(datasource)
-    return ResultData.ok(result)
+    return result ? ResultData.ok() : ResultData.fail(500, '更新失败')
   }
 
   @ApiOperation({ summary: '复制数据源' })
@@ -69,6 +64,6 @@ export class DataSourceController {
   @Get('del/:id')
   async delDataSource(@Param('id') id: number) {
     const result = await this.dataSourceService.delDataSource(id)
-    return ResultData.ok(result)
+    return result ? ResultData.ok() : ResultData.fail(500, '删除失败')
   }
 }

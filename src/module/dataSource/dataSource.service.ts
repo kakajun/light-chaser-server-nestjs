@@ -2,8 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { DataSourceEntity } from './entities/dataSource.entity'
-import { CreateDataSourceDto } from './dto/dataSource.dto'
-import { PageParam } from './dataSource.controller'
+import { ListDataSourcetDto, CreateDataSourceDto } from './dto/dataSource.dto'
 
 @Injectable()
 export class DataSourceService {
@@ -58,7 +57,7 @@ export class DataSourceService {
     return result.affected > 0
   }
 
-  async getDataSourcePageList(pageParam: PageParam): Promise<DataSourceEntity[]> {
+  async getDataSourcePageList(pageParam: ListDataSourcetDto) {
     if (!pageParam) return []
     const { size = 10, current = 1, searchValue } = pageParam
 
@@ -72,7 +71,11 @@ export class DataSourceService {
       queryBuilder.where('datasource.name LIKE :searchValue', { searchValue: `%${searchValue}%` })
     }
 
-    const [data, total] = await queryBuilder.getManyAndCount()
-    return data
+    const [list, total] = await queryBuilder.getManyAndCount()
+    return {
+      ...pageParam,
+      records: list,
+      total,
+    }
   }
 }

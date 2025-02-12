@@ -2,7 +2,7 @@ import { Injectable, HttpException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { ProjectEntity } from './entities/project.entity'
-import { CreatProjectDto } from './dto/project.dto'
+import { CreateProjectDto } from './dto/project.dto'
 import { PageParam } from './project.controller'
 import { ResultData } from '@/common/utils/result'
 import { IMAGE_SIZE, ImageType } from '@/common/constant/index'
@@ -41,10 +41,10 @@ export class ProjectService {
       dataJson: project.dataJson,
       id: project.id,
       name: project.name,
-    });
+    })
   }
 
-  async createProject(project: CreatProjectDto) {
+  async createProject(project: CreateProjectDto) {
     if (!project) return null
     const doc = await this.projectRepository.findOne({ where: { name: project.name } })
     if (doc) {

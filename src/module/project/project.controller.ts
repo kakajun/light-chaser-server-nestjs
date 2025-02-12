@@ -3,7 +3,7 @@ import { FileInterceptor } from '@nestjs/platform-express'
 import { ProjectService } from './project.service'
 import { ProjectEntity } from './entities/project.entity'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiBody, ApiTags } from '@nestjs/swagger'
-import { ListProjectDto, CreatProjectDto } from './dto/project.dto'
+import { ListProjectDto, CreateProjectDto } from './dto/project.dto'
 export interface PageParam {
   size: number
   current: number
@@ -60,7 +60,7 @@ export class ProjectController {
   @ApiOperation({ summary: '创建页面' })
   @ApiBearerAuth()
   @Post('create')
-  async createProject(@Body() project: CreatProjectDto) {
+  async createProject(@Body() project: CreateProjectDto) {
     return await this.projectService.createProject(project)
   }
 

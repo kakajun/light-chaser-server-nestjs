@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsString } from 'class-validator'
+import { IsNotEmpty, IsString, IsOptional } from 'class-validator'
 
 import { PagingDto } from '@/common/dto/index'
 
@@ -8,7 +8,7 @@ export class ListProjectDto extends PagingDto {
   searchValue: string
 }
 
-export class CreatProjectDto {
+export class CreateProjectDto {
   @ApiProperty({ description: '项目名称', example: 'Example Project' })
   @IsString()
   @IsNotEmpty({ message: '项目名称必填' })
@@ -24,5 +24,6 @@ export class CreatProjectDto {
 
   @ApiProperty({ description: '封面图片路径', example: '/path/to/cover.jpg' })
   @IsString()
+  @IsOptional()
   cover?: string
 }
