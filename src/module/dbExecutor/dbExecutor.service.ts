@@ -17,17 +17,17 @@ export class DbExecutorService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async executeSql(dbExecutorEntity: DbExecutorDto): Promise<any> {
-    if (!dbExecutorEntity) {
+  async executeSql(post: DbExecutorDto): Promise<any> {
+    if (!post) {
       throw new HttpException('SQL execution is incorrect, check the SQL syntax', 500)
     }
 
-    const sql = Base64Util.decode(dbExecutorEntity.sql)
+    const sql = Base64Util.decode(post.sql)
     if (!sql.trim().toLowerCase().startsWith('select')) {
       throw new HttpException('SQL cannot be empty and must start with select', 500)
     }
 
-    const DataSourceEntity = await this.datasourceRepository.findOne({ where: { id: 1 } })
+    const DataSourceEntity = await this.datasourceRepository.findOne({ where: { id: post.id } })
     if (!DataSourceEntity) {
       throw new HttpException('The data source does not exist', 500)
     }

@@ -24,19 +24,19 @@ export class DataSourceEntity extends BaseEntity {
   /**
    * 用户名
    */
-  @Column()
+  @Column({ nullable: true })
   username: string
 
   /**
    * 数据源链接密码
    */
-  @Column()
+  @Column({ nullable: true })
   password: string
 
   /**
    * 数据源链接地址
    */
-  @Column()
+  @Column({ nullable: true })
   url: string
 
   /**

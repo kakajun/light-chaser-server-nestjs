@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { Repository, DataSource } from 'typeorm'
 import { DataSourceEntity } from './entities/dataSource.entity'
 import { ListDataSourcetDto, CreateDataSourceDto } from './dto/dataSource.dto'
 
@@ -51,9 +51,9 @@ export class DataSourceService {
     return result > 0
   }
 
-  async delDataSource(id: number): Promise<boolean> {
-    if (!id) return false
-    const result = await this.datasourceRepository.delete(id)
+  async delDataSource(ids: number[]): Promise<boolean> {
+    if (!ids || ids.length === 0) return false
+    const result = await this.datasourceRepository.delete(ids)
     return result.affected > 0
   }
 
@@ -77,5 +77,53 @@ export class DataSourceService {
       records: list,
       total,
     }
+  }
+
+  async testDataSourceConnect(id: number): Promise<boolean> {
+    if (id == null) {
+      return false
+    }
+    const datasource = await this.datasourceRepository.findOne({ where: { id } })
+    if (datasource == null) {
+      return false
+    }
+
+    let connection: DataSource
+    try {
+      connection = await this.createConnection(datasource)
+      const queryRunner = connection.createQueryRunner()
+      await queryRunner.connect()
+
+      if (datasource.type === 'oracle') {
+        await queryRunner.query('SELECT 1 FROM dual')
+      } else {
+        await queryRunner.query('SELECT 1')
+      }
+      await queryRunner.release()
+    } catch (exception) {
+      console.error(exception.message, exception)
+      if (connection) {
+        await connection.destroy()
+      }
+      throw new HttpException(`link failed: ${exception.message}`, 500)
+    }
+
+    return true
+  }
+
+  private async createConnection(datasource: CreateDataSourceDto): Promise<DataSource> {
+    const arrs = datasource.url.split(':')
+    if (arrs.length == 0) {
+      throw new HttpException('链接地址需要带端口号', 500)
+    }
+    return new DataSource({
+      // type: datasource.type as 'mysql' | 'postgres' | 'oracle' | 'mssql', // 根据实际情况调整类型
+      type: 'mysql',
+      host: arrs[0],
+      port: Number(arrs[1]),
+      username: datasource.username,
+      password: datasource.password,
+      database: datasource.name,
+    }).initialize()
   }
 }

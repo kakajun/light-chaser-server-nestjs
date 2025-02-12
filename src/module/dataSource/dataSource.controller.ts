@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiBody, ApiTags } from '@nestjs/swagger'
+import { Controller, Get, Post, Body,  Param } from '@nestjs/common'
+import { ApiBearerAuth, ApiOperation, ApiBody, ApiTags } from '@nestjs/swagger'
 import { DataSourceService } from './dataSource.service'
 import { DataSourceEntity } from './entities/dataSource.entity'
 import { ListDataSourcetDto, CreateDataSourceDto } from './dto/dataSource.dto'
@@ -61,9 +61,18 @@ export class DataSourceController {
 
   @ApiOperation({ summary: '删除数据源' })
   @ApiBearerAuth()
-  @Get('del/:id')
-  async delDataSource(@Param('id') id: number) {
-    const result = await this.dataSourceService.delDataSource(id)
+  @Post('batchDel')
+  async delDataSource(@Body() ids: number[]) {
+    const result = await this.dataSourceService.delDataSource(ids)
     return result ? ResultData.ok() : ResultData.fail(500, '删除失败')
   }
+
+  @ApiOperation({ summary: '测试数据源' })
+  @ApiBearerAuth()
+  @Get('test/:id')
+  async testDataSourceConnect(@Param('id') id: number) {
+    const result = await this.dataSourceService.testDataSourceConnect(id)
+    return result ? ResultData.ok(id,'链接正常') : ResultData.fail(500, '链接失败')
+  }
+
 }
