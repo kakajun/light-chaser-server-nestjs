@@ -1,9 +1,11 @@
-import { Controller, Post, Get, Body, Param, UseInterceptors, UploadedFile } from '@nestjs/common'
-import { FileInterceptor } from '@nestjs/platform-express'
+import { HttpException, Controller, Post, Get, Body, Param, UseInterceptors, UploadedFile } from '@nestjs/common'
+import { FilesInterceptor } from '@nestjs/platform-express'
 import { ProjectService } from './project.service'
 import { ProjectEntity } from './entities/project.entity'
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiBody, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiConsumes, ApiBody, ApiTags } from '@nestjs/swagger'
 import { ListProjectDto, CreateProjectDto } from './dto/project.dto'
+import * as multer from 'multer'
+
 export interface PageParam {
   size: number
   current: number
@@ -90,8 +92,39 @@ export class ProjectController {
 
   @ApiBearerAuth()
   @Post('cover')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadCover(@Body() project: ProjectEntity, @UploadedFile() file: Express.Multer.File) {
-    return await this.projectService.uploadCover(project, file)
+  @ApiOperation({
+    summary: '上传image/jpeg, image/png, application/pdf文件',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+        },
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(
+    FilesInterceptor('files', undefined, {
+      storage: multer.memoryStorage(), // 使用内存存储，不立即保存到文件系统
+    }),
+  )
+  async uploadCover(@UploadedFile() file: Express.Multer.File, @Body('id') id: number) {
+    if (!file) {
+      throw new HttpException('No file uploaded', 500)
+    }
+
+    try {
+      const result = await this.projectService.uploadCover(file, id)
+      return result
+    } catch (error) {
+      throw new HttpException(error.message, 500)
+    }
   }
 }

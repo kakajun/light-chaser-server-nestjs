@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, Logger } from '@nestjs/common'
 import * as fs from 'fs'
 import * as path from 'path'
 import { ConfigService } from '@nestjs/config'
+import { ResultData } from '@/common/utils/result'
 
 @Injectable()
 export class FileService {
@@ -9,7 +10,7 @@ export class FileService {
 
   constructor(private readonly configService: ConfigService) {}
 
-  async uploadFile(file: Express.Multer.File): Promise<{ url: string }> {
+  async uploadFile(file: Express.Multer.File){
     // this.logger.log(`Received file: ${JSON.stringify(file)}`)
 
     if (!file) {
@@ -50,7 +51,7 @@ export class FileService {
 
     // 保存文件到文件系统
     fs.writeFileSync(filePath, file.buffer)
-    return { url: filePath }
+    return ResultData.ok(filePath)
   }
 
   async getAllFileedFiles(): Promise<string[]> {

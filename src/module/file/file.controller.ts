@@ -1,4 +1,4 @@
-import { Controller, Post, UseInterceptors, Get, UploadedFiles, BadRequestException } from '@nestjs/common'
+import { Controller, Post, UseInterceptors, Get, Body, UploadedFiles, BadRequestException } from '@nestjs/common'
 import { ApiBearerAuth, ApiBody, ApiTags, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger'
 import { FilesInterceptor } from '@nestjs/platform-express'
 import { FileService } from './file.service'
@@ -19,6 +19,9 @@ export class FileController {
     schema: {
       type: 'object',
       properties: {
+        id: {
+          type: 'number',
+        },
         files: {
           type: 'array',
           items: {
@@ -34,7 +37,7 @@ export class FileController {
       storage: multer.memoryStorage(), // 使用内存存储，不立即保存到文件系统
     }),
   )
-  async uploadFiles(@UploadedFiles() files: Array<Express.Multer.File>) {
+  async uploadFiles(@UploadedFiles() files: Array<Express.Multer.File>, @Body('id') id: number) {
     if (!files || files.length === 0) {
       throw new BadRequestException('No files uploaded')
     }

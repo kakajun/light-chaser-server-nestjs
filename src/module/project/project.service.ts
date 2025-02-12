@@ -81,8 +81,8 @@ export class ProjectService {
     return ResultData.ok(data)
   }
 
-  async uploadCover(project, file: Express.Multer.File) {
-    if (!project || !project.id || !project.file) {
+  async uploadCover(file: Express.Multer.File, id: number) {
+    if (!id || !file) {
       throw new HttpException('参数错误', 500)
     }
 
@@ -98,7 +98,7 @@ export class ProjectService {
       throw new HttpException('图片格式不支持', 500)
     }
     const existingProject = await this.projectRepository.findOne({
-      where: { id: project.id, deleted: 0 },
+      where: { id, deleted: 0 },
     })
     if (existingProject && existingProject.cover) {
       const oldFileName = existingProject.cover
@@ -123,9 +123,9 @@ export class ProjectService {
     const destFile = join(uploadDir, newFileName)
     // await file.mv(destFile)
     fs.writeFileSync(destFile, file.buffer)
-    project.cover = newFileName
-    project.updateTime = new Date()
-    await this.projectRepository.update(project.id, project)
+    existingProject.cover = newFileName
+    existingProject.updateTime = new Date()
+    await this.projectRepository.update(id, existingProject)
     return ResultData.ok({
       url: `${this.coverPath}${newFileName}`,
     })

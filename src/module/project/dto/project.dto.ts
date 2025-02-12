@@ -8,6 +8,12 @@ export class ListProjectDto extends PagingDto {
   searchValue: string
 }
 
+export class uploadCoverDto {
+  @ApiProperty({ description: '封面图片路径', example: '/path/to/cover.jpg' })
+  @IsString()
+  @IsNotEmpty({ message: '封面图片路径必填' })
+  cover: string
+}
 export class CreateProjectDto {
   @ApiProperty({ description: '项目名称', example: 'Example Project' })
   @IsString()
