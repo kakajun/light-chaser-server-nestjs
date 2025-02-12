@@ -35,9 +35,13 @@ export class ProjectService {
     if (!id) return null
     const project = await this.projectRepository.findOne({
       where: { id },
-      select: ['dataJson'],
+      select: ['dataJson', 'id', 'name'],
     })
-    return ResultData.ok(project ? project.dataJson : null)
+    return ResultData.ok({
+      dataJson: project.dataJson,
+      id: project.id,
+      name: project.name,
+    });
   }
 
   async createProject(project: CreatProjectDto) {

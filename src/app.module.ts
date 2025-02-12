@@ -11,11 +11,11 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.grard'
 import { RedisModule } from './module/redis/redis.module'
 import { UploadModule } from './module/upload/upload.module'
 import { LoggerService } from './module/monitor/logger/logger.service'
-
+// import { DataSourceModule } from './module/dataSource/dataSource.module'
 import { ProjectModule } from './module/project/project.module'
 import { UserModule } from './module/user/user.module'
 import { AxiosModule } from './module/axios/axios.module'
-import { PetModule } from './module/pet/pet.module'
+import { DataSourceModule } from './module/dataSource/dataSource.module'
 import { RoleModule } from './module/role/role.module'
 
 @Module({
@@ -67,8 +67,9 @@ import { RoleModule } from './module/role/role.module'
     UploadModule,
     UserModule,
     ProjectModule,
+    // DataSourceModule,
     AxiosModule,
-    PetModule,
+    DataSourceModule,
     RoleModule,
   ],
   controllers: [AppController],

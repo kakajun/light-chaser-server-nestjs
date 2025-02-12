@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common'
-import { DatasourceService } from './dataSource.service'
+import { DataSourceService } from './dataSource.service'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { DataSourceController } from './dataSource.controller'
-import { DatasourceEntity } from './entities/dataSource.entity'
+import { DataSourceEntity } from './entities/dataSource.entity'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([DatasourceEntity])],
+  imports: [TypeOrmModule.forFeature([DataSourceEntity])],
   controllers: [DataSourceController],
-  providers: [DatasourceService],
+  providers: [DataSourceService],
 })
 export class DataSourceModule {}

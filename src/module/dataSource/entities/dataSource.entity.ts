@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn } from 'typeorm'
 import { BaseEntity } from '@/common/entities/base'
 
-@Entity('datasource')
-export class DatasourceEntity extends BaseEntity {
+@Entity('dataSource')
+export class DataSourceEntity extends BaseEntity {
   /**
    * id
    */

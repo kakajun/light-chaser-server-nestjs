@@ -1,7 +1,7 @@
       import { Inject, Injectable } from '@nestjs/common';
       import { DataSource, Repository } from 'typeorm';
       import { InjectRepository } from '@nestjs/typeorm'
-      import { DatasourceEntity } from '@/module/dataSource/entities/datasource.entity';
+      import { DataSourceEntity } from '@/module/dataSource/entities/datasource.entity';
       import { DbExecutorEntity } from './entities/dbExecutor.entity';
       import { Base64Util } from '@/common/utils/base64Util';
       import { HttpException, Logger } from '@nestjs/common';
@@ -11,8 +11,8 @@
         private readonly logger = new Logger(DbExecutorService.name);
 
         constructor(
-          @InjectRepository(DatasourceEntity)
-          private readonly datasourceRepository: Repository<DatasourceEntity>,
+          @InjectRepository(DataSourceEntity)
+          private readonly datasourceRepository: Repository<DataSourceEntity>,
           @Inject('DATA_SOURCE') // 假设你在模块中将 DataSource 注入为 'DATA_SOURCE'
           private readonly dataSource: DataSource,
         ) {}
@@ -27,8 +27,8 @@
             throw new HttpException('SQL cannot be empty and must start with select', 500);
           }
 
-          const dataSourceEntity = await this.datasourceRepository.findOne({ where: { id: dbExecutorEntity.id } });
-          if (!dataSourceEntity) {
+          const DataSourceEntity = await this.datasourceRepository.findOne({ where: { id: dbExecutorEntity.id } });
+          if (!DataSourceEntity) {
             throw new HttpException('The data source does not exist', 500);
           }
 
