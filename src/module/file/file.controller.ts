@@ -1,12 +1,13 @@
 import { Controller, Post, UseInterceptors, Get, UploadedFiles, BadRequestException } from '@nestjs/common'
 import { ApiBearerAuth, ApiBody, ApiTags, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger'
 import { FilesInterceptor } from '@nestjs/platform-express'
-import { UploadService } from './upload.service'
+import { FileService } from './file.service'
 import * as multer from 'multer'
-@Controller('upload')
-@ApiTags('Upload')
-export class UploadController {
-  constructor(private readonly uploadService: UploadService) {}
+
+@Controller('api/file')
+@ApiTags('File')
+export class FileController {
+  constructor(private readonly uploadService: FileService) {}
 
   @ApiBearerAuth()
   @Post('/files')
@@ -60,7 +61,7 @@ export class UploadController {
     description: 'List of uploaded files',
     type: [String],
   })
-  async getAllUploadedFiles() {
-    return this.uploadService.getAllUploadedFiles()
+  async getAllFileedFiles() {
+    return this.uploadService.getAllFileedFiles()
   }
 }

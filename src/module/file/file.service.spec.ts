@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UploadService } from './upload.service';
-import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing'
+import { FileService } from './file.service'
+import { ConfigService } from '@nestjs/config'
 
-describe('UploadService', () => {
-  let service: UploadService;
+describe('FileService', () => {
+  let service: FileService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UploadService,
+        FileService,
         {
           provide: ConfigService,
           useValue: {
@@ -16,20 +16,20 @@ describe('UploadService', () => {
               // 根据需要返回不同的配置值
               switch (key) {
                 case 'UPLOAD_DIR':
-                  return '/path/to/upload/dir';
+                  return '/path/to/upload/dir'
                 default:
-                  return null;
+                  return null
               }
             }),
           },
         },
       ],
-    }).compile();
+    }).compile()
 
-    service = module.get<UploadService>(UploadService);
-  });
+    service = module.get<FileService>(FileService)
+  })
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-});
+    expect(service).toBeDefined()
+  })
+})

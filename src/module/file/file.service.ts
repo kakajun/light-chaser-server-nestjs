@@ -4,8 +4,8 @@ import * as path from 'path'
 import { ConfigService } from '@nestjs/config'
 
 @Injectable()
-export class UploadService {
-  private readonly logger = new Logger(UploadService.name)
+export class FileService {
+  private readonly logger = new Logger(FileService.name)
 
   constructor(private readonly configService: ConfigService) {}
 
@@ -53,14 +53,14 @@ export class UploadService {
     return { url: filePath }
   }
 
-  async getAllUploadedFiles(): Promise<string[]> {
+  async getAllFileedFiles(): Promise<string[]> {
     const uploadPath =
       this.configService.get('NODE_ENV') === 'production'
         ? '/www/wwwroot/blog.junfeng530.xyz/uploads'
         : path.join(__dirname, '..', '..', 'uploads')
 
     if (!fs.existsSync(uploadPath)) {
-      this.logger.warn(`Upload path does not exist: ${uploadPath}`)
+      this.logger.warn(`File path does not exist: ${uploadPath}`)
       return []
     }
 
