@@ -94,7 +94,7 @@ export class ProjectService {
       throw new HttpException('图片格式不支持', 500)
     }
     const existingProject = await this.projectRepository.findOne({
-      where: { id, deleted: 0 },
+      where: { id, deleted: '0' },
     })
     if (existingProject && existingProject.cover) {
       const oldFileName = existingProject.cover
@@ -132,7 +132,7 @@ export class ProjectService {
   async getProjectPageList(pageParam: PageParam) {
     const entity = this.projectRepository
       .createQueryBuilder('entity')
-      .where('entity.deleted = :deleted', { deleted: 0 })
+      .where('entity.deleted = :deleted', { deleted: '0' })
     if (pageParam.searchValue) {
       entity.andWhere('entity.name LIKE :searchValue', { searchValue: `%${pageParam.searchValue}%` })
     }

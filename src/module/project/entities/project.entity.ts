@@ -3,17 +3,14 @@ import { BaseEntity } from '@/common/entities/base'
 
 @Entity('project')
 export class ProjectEntity extends BaseEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id', comment: '项目ID' })
   id: number
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: true })
   name: string
 
   @Column({ nullable: true })
   des: string
-
-  @Column({ default: 0 })
-  deleted: number
 
   @Column({ type: 'text', nullable: true })
   dataJson: string

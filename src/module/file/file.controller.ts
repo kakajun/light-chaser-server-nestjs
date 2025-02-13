@@ -1,18 +1,18 @@
-import { Controller, Post, UseInterceptors, Get, Body, UploadedFiles, BadRequestException } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiTags, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger'
-import { FilesInterceptor } from '@nestjs/platform-express'
+import { HttpException, Controller, Post, Param, UseInterceptors, Get, Body, UploadedFile } from '@nestjs/common'
+import { ApiBearerAuth, ApiBody, ApiTags, ApiParam, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { FileInterceptor } from '@nestjs/platform-express'
 import { FileService } from './file.service'
 import * as multer from 'multer'
 
 @Controller('api/file')
-@ApiTags('File')
+@ApiTags('文件管理')
 export class FileController {
-  constructor(private readonly uploadService: FileService) {}
+  constructor(private readonly fileService: FileService) {}
 
   @ApiBearerAuth()
-  @Post('/files')
+  @Post('/upload')
   @ApiOperation({
-    summary: '上传image/jpeg, image/png, application/pdf文件',
+    summary: '上传image/jpeg, image/png文件',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -22,49 +22,49 @@ export class FileController {
         id: {
           type: 'number',
         },
-        files: {
-          type: 'array',
-          items: {
-            type: 'string',
-            format: 'binary',
-          },
+        file: {
+          type: 'string',
+          format: 'binary',
         },
       },
     },
   })
   @UseInterceptors(
-    FilesInterceptor('files', undefined, {
+    FileInterceptor('file', {
       storage: multer.memoryStorage(), // 使用内存存储，不立即保存到文件系统
     }),
   )
-  async uploadFiles(@UploadedFiles() files: Array<Express.Multer.File>, @Body('id') id: number) {
-    if (!files || files.length === 0) {
-      throw new BadRequestException('No files uploaded')
+  async uploadImage(@UploadedFile() file: Express.Multer.File, @Body('id') id: number) {
+    if (!file) {
+      throw new HttpException('No file uploaded', 500)
     }
-
-    const uploadResults = []
-
-    for (const file of files) {
-      try {
-        const result = await this.uploadService.uploadFile(file)
-        uploadResults.push(result)
-      } catch (error) {
-        throw new BadRequestException(error.message)
-      }
+    try {
+      const result = await this.fileService.uploadImage(file, id)
+      return result
+    } catch (error) {
+      throw new HttpException(error.message, 500)
     }
-
-    return uploadResults
   }
 
   @ApiBearerAuth()
-  @Get('/files')
-  @ApiOperation({ summary: '获取所有上传文件' })
+  @Get('getList/:id')
+  @ApiOperation({ summary: '通过ID获取上传文件' })
   @ApiResponse({
     status: 200,
-    description: 'List of uploaded files',
     type: [String],
   })
-  async getAllFileedFiles() {
-    return this.uploadService.getAllFileedFiles()
+  async getSourceImageList(@Param('id') id: number) {
+    return this.fileService.getSourceImageList()
+  }
+
+  @ApiBearerAuth()
+  @Get('del/:id')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    type: String,
+  })
+  async delImageSource(@Param('id') id: number) {
+    return await this.fileService.delImageSource(id)
   }
 }

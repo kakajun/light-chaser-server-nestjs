@@ -93,7 +93,7 @@ export class ProjectController {
   @ApiBearerAuth()
   @Post('cover')
   @ApiOperation({
-    summary: '上传image/jpeg, image/png, application/pdf文件',
+    summary: '上传image/jpeg, image/png文件',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({

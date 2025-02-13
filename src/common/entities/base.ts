@@ -16,12 +16,12 @@ export abstract class BaseEntity {
   //0代表存在 1代表删除
   @Column({
     type: 'varchar',
-    name: 'del_flag',
+    name: 'deleted',
     default: '0',
     length: 1,
     comment: '删除标志',
   })
-  public delFlag: string
+  public deleted: string
 
   @Column({
     type: 'varchar',

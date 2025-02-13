@@ -24,3 +24,9 @@ export enum AppExceptionCodeMsg {
 export const ImageType = ['.bmp', '.jpg', '.jpeg', '.png', '.gif']
 
 export const IMAGE_SIZE = 1024 * 1024 * 5 // 5MB
+
+export const enum FileTypeEnum {
+  IMAGE = 1,
+  VIDEO = 2,
+  MODEL = 3,
+}
