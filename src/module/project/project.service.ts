@@ -37,11 +37,7 @@ export class ProjectService {
       where: { id },
       select: ['dataJson', 'id', 'name'],
     })
-    return ResultData.ok({
-      dataJson: project.dataJson,
-      id: project.id,
-      name: project.name,
-    })
+    return ResultData.ok(project.dataJson)
   }
 
   async createProject(project: CreateProjectDto) {
