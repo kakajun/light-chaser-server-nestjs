@@ -1,5 +1,5 @@
 import { HttpException, Controller, Post, Get, Body, Param, UseInterceptors, UploadedFile } from '@nestjs/common'
-import { FilesInterceptor } from '@nestjs/platform-express'
+import { FileInterceptor } from '@nestjs/platform-express'
 import { ProjectService } from './project.service'
 import { ProjectEntity } from './entities/project.entity'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiConsumes, ApiBody, ApiTags } from '@nestjs/swagger'
@@ -111,7 +111,7 @@ export class ProjectController {
     },
   })
   @UseInterceptors(
-    FilesInterceptor('files', undefined, {
+    FileInterceptor('file', {
       storage: multer.memoryStorage(), // 使用内存存储，不立即保存到文件系统
     }),
   )
