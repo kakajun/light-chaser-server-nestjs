@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body,  Param } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiBody, ApiTags } from '@nestjs/swagger'
 import { DataSourceService } from './dataSource.service'
 import { DataSourceEntity } from './entities/dataSource.entity'
@@ -72,7 +72,6 @@ export class DataSourceController {
   @Get('test/:id')
   async testDataSourceConnect(@Param('id') id: number) {
     const result = await this.dataSourceService.testDataSourceConnect(id)
-    return result ? ResultData.ok(id,'链接正常') : ResultData.fail(500, '链接失败')
+    return result ? ResultData.ok(id, '链接正常') : ResultData.fail(500, '链接失败')
   }
-
 }

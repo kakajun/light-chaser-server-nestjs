@@ -6,9 +6,7 @@ import { IS_PUBLIC_KEY } from '@/common/public.decorator'
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor(
-    private reflector: Reflector,
-  ) {
+  constructor(private reflector: Reflector) {
     super()
   }
 
@@ -20,5 +18,4 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (!accessToken) throw new ForbiddenException('请重新登录')
     return super.canActivate(ctx)
   }
-
 }

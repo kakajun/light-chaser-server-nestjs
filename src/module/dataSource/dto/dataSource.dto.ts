@@ -3,19 +3,19 @@ import { IsString, IsNotEmpty, IsOptional, Length } from 'class-validator'
 import { PagingDto } from '@/common/dto/index'
 
 export class CreateDataSourceDto {
-  @ApiProperty({ description: '数据库名称', example: 'MyDataSource' })
+  @ApiProperty({ description: '数据库名称', example: 'light-chaser' })
   @IsString()
   @Length(0, 50)
   @IsNotEmpty({ message: '数据库名称必填' })
   name: string
 
-  @ApiProperty({ description: '数据源类型', example: 'MySQL' })
+  @ApiProperty({ description: '数据源类型', example: 'sqlite' })
   @IsString()
   @Length(0, 20)
   @IsNotEmpty({ message: '数据源类型必填' })
   type: string
 
-  @ApiProperty({ description: '用户名', example: 'user123' })
+  @ApiProperty({ description: '用户名', example: '' })
   @IsString()
   @IsOptional()
   username?: string
