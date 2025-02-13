@@ -14,7 +14,6 @@ import { ProjectModule } from './module/project/project.module'
 import { UserModule } from './module/user/user.module'
 import { AxiosModule } from './module/axios/axios.module'
 import { DataSourceModule } from './module/dataSource/dataSource.module'
-import { RoleModule } from './module/role/role.module'
 import { join } from 'path'
 
 @Module({
@@ -52,10 +51,8 @@ import { join } from 'path'
     FileModule,
     UserModule,
     ProjectModule,
-    // DataSourceModule,
     AxiosModule,
     DataSourceModule,
-    RoleModule,
   ],
   controllers: [AppController],
   providers: [
