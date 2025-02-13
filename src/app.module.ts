@@ -8,7 +8,6 @@ import envConfig from '../config/env'
 import { AuthModule } from './module/system/auth/auth.module'
 import { APP_GUARD } from '@nestjs/core'
 import { JwtAuthGuard } from './common/guards/jwt-auth.grard'
-import { RedisModule } from './module/redis/redis.module'
 import { FileModule } from './module/file/file.module'
 import { LoggerService } from './module/monitor/logger/logger.service'
 import { ProjectModule } from './module/project/project.module'
@@ -38,29 +37,6 @@ import { RoleModule } from './module/role/role.module'
         logging: true, // 添加此行以启用 SQL 日志
       }),
     }),
-
-    // redis
-    RedisModule.forRootAsync(
-      {
-        imports: [ConfigModule],
-        inject: [ConfigService],
-        useFactory: (config: ConfigService) => {
-          return {
-            closeClient: true,
-            readyLog: true,
-            errorLog: true,
-            config: {
-              host: config.get('REDIS_HOST'),
-              password: config.get('REDIS_PASSWORD'),
-              port: config.get('REDIS_PORT'),
-              db: config.get('REDIS_DB'),
-              keyPrefix: config.get('REDIS_KEY_PREFIX'),
-            },
-          }
-        },
-      },
-      true,
-    ),
     ArticleModule,
     AuthModule,
     FileModule,

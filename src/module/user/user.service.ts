@@ -10,14 +10,12 @@ import { GetNowDate, GenerateUUID } from '@/common/utils/index'
 import { CacheEnum } from '@/common/enum/index'
 import { LOGIN_TOKEN_EXPIRESIN } from '@/common/constant/index'
 import { plainToInstance } from 'class-transformer'
-import { RedisService } from '@/module/redis/redis.service'
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepo: Repository<UserEntity>,
-    private readonly redisService: RedisService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -56,16 +54,16 @@ export class UserService {
 
     const uuid = GenerateUUID()
     const payload = { username: data.userName, loginDate, uuid }
-    const metaData = {
-      browser: clientInfo.browser,
-      ipaddr: clientInfo.ipaddr,
-      loginTime: loginDate,
-      token: uuid,
-      user: data,
-      userId: data.userId,
-      username: data.userName,
-    }
-    await this.redisService.set(`${CacheEnum.LOGIN_TOKEN_KEY}${uuid}`, metaData, LOGIN_TOKEN_EXPIRESIN)
+    // const metaData = {
+    //   browser: clientInfo.browser,
+    //   ipaddr: clientInfo.ipaddr,
+    //   loginTime: loginDate,
+    //   token: uuid,
+    //   user: data,
+    //   userId: data.userId,
+    //   username: data.userName,
+    // }
+    // await this.redisService.set(`${CacheEnum.LOGIN_TOKEN_KEY}${uuid}`, metaData, LOGIN_TOKEN_EXPIRESIN)
     return ResultData.ok(this.jwtService.sign(payload), '登录成功')
   }
 
@@ -87,7 +85,6 @@ export class UserService {
     })
     return ResultData.ok(users)
   }
-
 
   async findOne(userId: number) {
     const data = await this.userRepo.findOneBy({ userId })

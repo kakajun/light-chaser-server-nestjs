@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { jwtConstants } from '@/common/constants'
-import { RedisService } from '@/module/redis/redis.service'
 
 @Injectable()
 // 验证请求头中的token
 export default class JwtAuthStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(private readonly redisService: RedisService) {
+  constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -21,7 +20,6 @@ export default class JwtAuthStrategy extends PassportStrategy(Strategy, 'jwt') {
    * 当用户存在时，会将 user 对象添加到 req 中，在之后的 req 对象中，可以使用 req.user 获取当前登录用户。
    */
   async validate(payload: { uuid: string; username: string; userId: string; iat: Date }) {
-    // const user = await this.redisService.get(`${CacheEnum.LOGIN_TOKEN_KEY}${payload.uuid}`)
     const { username } = payload
     return {
       username,
