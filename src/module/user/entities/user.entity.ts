@@ -1,6 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, Index, Unique } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, Index, Unique } from 'typeorm'
 import { BaseEntity } from '@/common/entities/base'
-import { ArticleEntity } from '@/module/article/entities/article.entity'
 import { Exclude, Expose } from 'class-transformer'
 
 @Entity('sys_user', {
@@ -31,11 +30,4 @@ export class UserEntity extends BaseEntity {
 
   @Column({ type: 'datetime', name: 'login_date', comment: '最后登录时间' })
   public loginDate: Date
-
-  @Expose()
-  @OneToMany(() => ArticleEntity, (article) => article.user)
-  articles: ArticleEntity[]
-
-  // @OneToMany(() => Role, (role) => role.user)
-  // roles: Role[]
 }

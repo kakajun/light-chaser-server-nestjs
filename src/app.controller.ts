@@ -28,13 +28,4 @@ export class AppController {
   getHello() {
     return this.appService.getHello()
   }
-
-  @ApiBearerAuth()
-  @ApiOperation({ summary: '通过事务建立用户和默认文章' })
-  @ApiBody({ type: CreateUserWithPostDto })
-  @Post('create-user-with-post')
-  async createUserWithPost(@Body() createUserWithPostDto: CreateUserWithPostDto): Promise<void> {
-    const { username, articleTitle } = createUserWithPostDto
-    await this.appService.createUserWithPost(username, articleTitle)
-  }
 }

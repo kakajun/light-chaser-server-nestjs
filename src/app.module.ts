@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { ArticleModule } from './module/article/article.module'
 import envConfig from '../config/env'
 import { AuthModule } from './module/system/auth/auth.module'
 import { APP_GUARD } from '@nestjs/core'
@@ -37,7 +36,6 @@ import { RoleModule } from './module/role/role.module'
         logging: true, // 添加此行以启用 SQL 日志
       }),
     }),
-    ArticleModule,
     AuthModule,
     FileModule,
     UserModule,
