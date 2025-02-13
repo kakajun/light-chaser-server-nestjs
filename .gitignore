@@ -35,5 +35,4 @@ yarn.lock
 !.vscode/extensions.json
 
 logs
-
-source
+light-chaser.db
