@@ -3,8 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import envConfig from '../config/env'
+import envConfig from '../config/env' // 导入 env.ts 文件
 import { AuthModule } from './module/system/auth/auth.module'
+import { ServeStaticModule } from '@nestjs/serve-static'
 // import { APP_GUARD } from '@nestjs/core'
 // import { JwtAuthGuard } from './common/guards/jwt-auth.grard'
 import { FileModule } from './module/file/file.module'
@@ -14,12 +15,23 @@ import { UserModule } from './module/user/user.module'
 import { AxiosModule } from './module/axios/axios.module'
 import { DataSourceModule } from './module/dataSource/dataSource.module'
 import { RoleModule } from './module/role/role.module'
+import { join } from 'path'
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(envConfig.PROJECT_RESOURCE_PATH, envConfig.SOURCE_IMAGE_PATH),
+      serveRoot: envConfig.SOURCE_IMAGE_PATH,
+      exclude: ['/api/(.*)'], // 排除 /api 路由
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(envConfig.PROJECT_RESOURCE_PATH, envConfig.COVER_PATH),
+      serveRoot: envConfig.COVER_PATH,
+      exclude: ['/api/(.*)'], // 排除 /api 路由
+    }),
     ConfigModule.forRoot({
       isGlobal: true, // 设置为全局
-      envFilePath: [envConfig.path],
+      load: [() => envConfig], // 加载 env.ts 中的配置
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -46,7 +58,6 @@ import { RoleModule } from './module/role/role.module'
     RoleModule,
   ],
   controllers: [AppController],
-  // 注册为全局守卫
   providers: [
     AppService,
     // TODO 暂时关闭全局守卫, 不需要token验证

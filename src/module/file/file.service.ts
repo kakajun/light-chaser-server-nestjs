@@ -55,7 +55,7 @@ export class FileService {
     })
 
     // 如果已经存在相同 hash 值的图片文件，则直接返回已存在的图片地址
-    if (record) return this.projectResourcePath + record.url
+    if (record) return ResultData.ok(path.posix.join(this.sourceImagePath, record.url))
     // 生成文件路径、文件名
     const newFileName = GenerateUUID() + suffix
     const uploadDir = this.projectResourcePath + this.sourceImagePath
@@ -78,26 +78,26 @@ export class FileService {
       projectId,
     })
     await this.fileRepository.save(newFileEntity)
-    return ResultData.ok(this.sourceImagePath + newFileName)
+    return ResultData.ok(path.posix.join(this.sourceImagePath, newFileName))
   }
 
-  async getSourceImageList(): Promise<string[]> {
-    const uploadPath =
-      this.configService.get('NODE_ENV') === 'production'
-        ? '/www/wwwroot/blog.junfeng530.xyz/uploads'
-        : path.join(__dirname, '..', '..', 'uploads')
-
-    if (!fs.existsSync(uploadPath)) {
-      this.logger.warn(`File path does not exist: ${uploadPath}`)
-      return []
-    }
-
-    const files = fs.readdirSync(uploadPath)
-    return files.map((file) => path.join(uploadPath, file))
+  async getSourceImageList(projectId: number) {
+    if (!projectId) throw new BadRequestException('项目 id 错误')
+    const images = await this.fileRepository.find({
+      where: {
+        projectId,
+        deleted: '0',
+      },
+    })
+    images.forEach((image) => {
+      image.url = this.sourceImagePath + image.url
+    })
+    return ResultData.ok(images)
   }
 
-  delImageSource(id: number) {
-    return `This action removes a #${id} role`
-    // return ResultData.ok()
+  async delImageSource(imageId: number) {
+    if (!imageId || imageId <= 0) throw new BadRequestException('图片 id 错误')
+    const result = await this.fileRepository.delete(imageId)
+    return result.affected > 0 ? ResultData.ok() : ResultData.fail(500, '删除失败')
   }
 }

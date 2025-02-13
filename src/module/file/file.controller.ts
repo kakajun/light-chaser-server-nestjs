@@ -19,7 +19,7 @@ export class FileController {
     schema: {
       type: 'object',
       properties: {
-        id: {
+        projectId: {
           type: 'number',
         },
         file: {
@@ -34,12 +34,12 @@ export class FileController {
       storage: multer.memoryStorage(), // 使用内存存储，不立即保存到文件系统
     }),
   )
-  async uploadImage(@UploadedFile() file: Express.Multer.File, @Body('id') id: number) {
+  async uploadImage(@UploadedFile() file: Express.Multer.File, @Body('projectId') projectId: number) {
     if (!file) {
       throw new HttpException('No file uploaded', 500)
     }
     try {
-      const result = await this.fileService.uploadImage(file, id)
+      const result = await this.fileService.uploadImage(file, projectId)
       return result
     } catch (error) {
       throw new HttpException(error.message, 500)
@@ -54,7 +54,7 @@ export class FileController {
     type: [String],
   })
   async getSourceImageList(@Param('id') id: number) {
-    return this.fileService.getSourceImageList()
+    return this.fileService.getSourceImageList(id)
   }
 
   @ApiBearerAuth()
