@@ -1,15 +1,7 @@
-import { Body, Controller, Get, Post } from '@nestjs/common'
+import { Controller, Get } from '@nestjs/common'
 import { AppService } from './app.service'
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiProperty } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger'
 import { Public } from '@/common/public.decorator'
-
-class CreateUserWithPostDto {
-  @ApiProperty({ description: '用户名', example: 'john_doe' })
-  username: string
-
-  @ApiProperty({ description: '文章标题', example: 'My First Post' })
-  articleTitle: string
-}
 
 @Controller('app')
 export class AppController {

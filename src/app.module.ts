@@ -5,8 +5,8 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import envConfig from '../config/env'
 import { AuthModule } from './module/system/auth/auth.module'
-import { APP_GUARD } from '@nestjs/core'
-import { JwtAuthGuard } from './common/guards/jwt-auth.grard'
+// import { APP_GUARD } from '@nestjs/core'
+// import { JwtAuthGuard } from './common/guards/jwt-auth.grard'
 import { FileModule } from './module/file/file.module'
 import { LoggerService } from './module/monitor/logger/logger.service'
 import { ProjectModule } from './module/project/project.module'
@@ -49,10 +49,11 @@ import { RoleModule } from './module/role/role.module'
   // 注册为全局守卫
   providers: [
     AppService,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
+    // TODO 暂时关闭全局守卫, 不需要token验证
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: JwtAuthGuard,
+    // },
     LoggerService,
   ],
   exports: [LoggerService], // 导出 LoggerService

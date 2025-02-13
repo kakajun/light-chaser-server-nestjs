@@ -7,8 +7,8 @@ import * as bcryptjs from 'bcryptjs'
 import { JwtService } from '@nestjs/jwt'
 import { ResultData } from '@/common/utils/result'
 import { GetNowDate, GenerateUUID } from '@/common/utils/index'
-import { CacheEnum } from '@/common/enum/index'
-import { LOGIN_TOKEN_EXPIRESIN } from '@/common/constant/index'
+// import { CacheEnum } from '@/common/enum/index'
+// import { LOGIN_TOKEN_EXPIRESIN } from '@/common/constant/index'
 import { plainToInstance } from 'class-transformer'
 
 @Injectable()
