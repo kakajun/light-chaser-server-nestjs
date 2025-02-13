@@ -119,9 +119,11 @@ export class ProjectService {
     const destFile = join(uploadDir, newFileName)
     // await file.mv(destFile)
     fs.writeFileSync(destFile, file.buffer)
-    existingProject.cover = newFileName
-    existingProject.updateTime = new Date()
-    await this.projectRepository.update(id, existingProject)
+    if (existingProject) {
+      existingProject.cover = newFileName
+      existingProject.updateTime = new Date()
+      await this.projectRepository.update(id, existingProject)
+    }
     return ResultData.ok({
       url: `${this.coverPath}${newFileName}`,
     })
