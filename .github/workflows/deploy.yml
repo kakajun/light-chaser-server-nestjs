@@ -17,8 +17,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Login to Alibaba Cloud Container Registry
-        run: |
-          echo "${{ secrets.ALIYUN_DOCKER_PASSWORD }}" | docker login --username ${{ secrets.ALIYUN_DOCKER_USERNAME }} --password-stdin crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com
+        run: docker login --username ${{ secrets.ALIYUN_DOCKER_USERNAME }} --password ${{ secrets.ALIYUN_DOCKER_PASSWORD }} crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com
 
       - name: Build Docker image
         run: docker build -t crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser-server-nestjs:latest .
