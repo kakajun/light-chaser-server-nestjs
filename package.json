@@ -12,7 +12,7 @@
     "start": "nest start",
     "dev": "cross-env NODE_ENV=test nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/src/main",
+    "start:prod": "cross-env NODE_ENV=production node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -22,6 +22,7 @@
     "test:article": "jest --watch i:/git/my-nestjs/src/module/article/article.service.spec.ts"
   },
   "dependencies": {
+    "axios": "^1.7.9",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/serve-static": "^5.0.2",

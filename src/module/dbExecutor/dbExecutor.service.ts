@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { DataSource, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
-import { DataSourceEntity } from '@/module/dataSource/entities/datasource.entity'
+import { DataSourceEntity } from '@/module/dataSource/entities/dataSource.entity'
 import { DbExecutorDto } from './dto/dbExecutor.dto'
 import { Base64Util } from '@/common/utils/base64Util'
 import { HttpException, Logger } from '@nestjs/common'

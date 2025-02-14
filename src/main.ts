@@ -13,8 +13,8 @@ async function bootstrap() {
 
   // 注册swagger
   const config = new DocumentBuilder()
-    .setTitle('管理后台')
-    .setDescription('管理后台学习NestJs接口文档')
+    .setTitle('light-chaser-server-nestjs')
+    .setDescription('light-chaser的后端接口文档')
     .setVersion('1.0')
     .addBearerAuth()
     .build()
@@ -23,7 +23,7 @@ async function bootstrap() {
     swaggerOptions: {
       persistAuthorization: true,
     },
-    customSiteTitle: 'NestJs接口文档', // 出现在页面浏览器标签上显示的标题
+    customSiteTitle: 'light-chaser-server', // 出现在页面浏览器标签上显示的标题
   })
 
   // 获取真实 ip
@@ -45,7 +45,6 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter(loggerService))
 
   await app.listen(3000)
-
   // 打印端口
   console.log(`http://localhost:3000/docs`)
 }
