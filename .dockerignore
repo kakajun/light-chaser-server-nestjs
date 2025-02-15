@@ -3,7 +3,4 @@ dist
 logs
 npm-debug.log
 .git
-.env
 *.md
-.gitignore
-.dockerignore
