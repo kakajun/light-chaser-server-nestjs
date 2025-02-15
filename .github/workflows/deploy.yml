@@ -44,17 +44,16 @@ jobs:
             echo "Logging into Alibaba Cloud Docker registry..."
             docker login --username ${{ secrets.ALIYUN_DOCKER_USERNAME }} --password ${{ secrets.ALIYUN_DOCKER_PASSWORD }} crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com
 
-            echo "Pulling latest Docker image..."
-            docker pull crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser-server-nestjs:latest
-
             echo "Stopping and removing existing container if exists..."
             docker ps -q --filter "name=light-chaser-server" | grep -q . && docker stop light-chaser-server || echo "Container light-chaser-server is not running"
             docker ps -a -q --filter "name=light-chaser-server" | grep -q . && docker rm light-chaser-server || echo "Container light-chaser-server does not exist"
 
-            echo "Checking and freeing port 3000 if occupied..."
-            docker ps -q --filter "publish=3000" | grep -q . && \
-              docker ps -q --filter "publish=3000" | xargs -I {} docker stop {} && \
-              docker ps -a -q --filter "publish=3000" | xargs -I {} docker rm {} || echo "Port 3000 is not occupied"
+            echo "Removing old Docker image if exists..."
+            docker images -q crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser-server-nestjs:latest | grep -q . && docker rmi crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser-server-nestjs:latest || echo "Old image does not exist"
+
+            echo "Pulling latest Docker image..."
+            docker pull crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser-server-nestjs:latest
+
 
             echo "Running new container..."
             docker run -d --name light-chaser-server -p 3000:3000 crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser-server-nestjs:latest
