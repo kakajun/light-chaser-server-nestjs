@@ -35,17 +35,20 @@ import { join } from 'path'
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        type: 'sqlite', // 修改为 sqlite
-        entities: [`${__dirname}/**/*.entity{.ts,.js}`],
-        database: configService.get('DB_NAME'), // 数据库文件名，SQLite 使用文件路径
-        extra: {
-          journalMode: 'WAL',
-          foreignKeys: true, // 启用外键支持
-        },
-        synchronize: true, // 根据实体自动创建数据库表， 生产环境建议关闭
-        logging: true, // 添加此行以启用 SQL 日志
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const dbType = configService.get<'mysql' | 'postgres' | 'sqlite'>('DB_TYPE') // 显式指定类型
+        return {
+          type: dbType,
+          entities: [`${__dirname}/**/*.entity{.ts,.js}`],
+          database: configService.get('DB_NAME'), // 数据库文件名，SQLite 使用文件路径
+          port: configService.get<number>('DB_PORT'),
+          host: configService.get('DB_HOST'), // 添加主机配置
+          username: configService.get<string>('DB_USERNAME'),
+          password: configService.get<string>('DB_PASSWORD'),
+          synchronize: true, // 根据实体自动创建数据库表， 生产环境建议关闭
+          logging: true, // 添加此行以启用 SQL 日志
+        }
+      },
     }),
     AuthModule,
     FileModule,
