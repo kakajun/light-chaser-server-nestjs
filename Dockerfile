@@ -17,8 +17,10 @@ WORKDIR /usr/src/app
 
 # 安装 pnpm
 RUN npm install -g pnpm
+# 安装 pnpm 和 pm2
+RUN npm install -g pnpm pm2
 
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 EXPOSE 3000
-CMD ["node", "dist/src/main"]
+CMD ["pm2-runtime", "dist/src/main.js"]
