@@ -26,12 +26,12 @@ export class UserEntity extends BaseEntity {
   // @Expose()
   // @Column({ type: 'enum', enum: ['male', 'female'], nullable: true })
   // sex: 'male' | 'female' | null
-  @Expose()
-  //0男 1女 2未知
-  @Column({ type: 'text', name: 'sex', comment: '性别' })
-  public sex: string
-  @Exclude({ toPlainOnly: true })
-  
+  // @Expose()
+  // //0男 1女 2未知
+  // @Column({ type: 'text', name: 'sex', comment: '性别' })
+  // public sex: string
+  // @Exclude({ toPlainOnly: true })
+
   @Column({ type: 'varchar', length: 200, nullable: false, default: '', comment: '用户登录密码' })
   public password: string
 
