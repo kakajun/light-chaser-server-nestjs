@@ -55,6 +55,6 @@ jobs:
             docker pull crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser:latest
 
             echo "Running new container..."
-            docker run -d --name light-chaser -v /root/nestguazai:/usr/src/app/guazai -p 3000:3000 crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser:latest
+            docker run -d --name light-chaser -v /root/nestguazai:/app/guazai -p 3000:3000 crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser:latest
 
             echo "Deployment completed successfully."

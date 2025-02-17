@@ -26,7 +26,7 @@ sqlite3 5.1.7
 1. 刷新404
 
 ## 持续集成部署步骤
-1. 准备阿里云镜像仓库(免费)和Ecs服务器(收费)
+1. 准备阿里云镜像仓库(免费)和Ecs服务器(收费),阿里云镜像创建库命名为`light-chaser`, 镜像库地址记下,待会用
 2. fock 项目, 在github的设置中,选择`Secrets and variables`中的`Actions`,然后在`Secrets`中点击`Add repository secret`添加`ALIYUN_DOCKER_PASSWORD`,`ALIYUN_DOCKER_USERNAME`,`SERVER_HOST`,`SERVER_SSH_KEY`,`SERVER_USERNAME`
 3. 修改`deploy.yml`文件,把自己的阿里镜像地址替换上去,  提交代码, 会触发workflows的`deploy.yml`文件
 4. docker 拉取mysql, 注意把`123456`换成自己的密码,  `docker run --name my-mysql -e MYSQL_ROOT_PASSWORD=123456 -p 3306:3306 -d mysql`
