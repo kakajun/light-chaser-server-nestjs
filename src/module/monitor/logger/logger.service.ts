@@ -35,7 +35,7 @@ export class LoggerService {
         }),
         // 使用 daily-rotate-file 来实现按日期生成不同日志文件
         new transports.DailyRotateFile({
-          filename: 'logs/app-%DATE%.log', // 文件名中包含日期
+          filename: 'guazai/logs/app-%DATE%.log', // 文件名中包含日期
           datePattern: 'YYYY-MM-DD', // 设置日期格式
           maxFiles: '7d', // 保留最近 7 天的日志文件
           level: 'info', // 日志级别为 info

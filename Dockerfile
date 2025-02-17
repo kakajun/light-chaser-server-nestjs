@@ -22,7 +22,7 @@ RUN npm install -g pnpm pm2
 
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/.env.prod ./
+COPY --from=builder /usr/src/app/guazai ./guazai
 
 EXPOSE 3000
 CMD ["pm2-runtime", "dist/src/main.js"]
