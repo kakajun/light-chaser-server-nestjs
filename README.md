@@ -33,7 +33,7 @@ sqlite3 5.1.7
 5. 登陆ecs服务器修改/root/nestguazai 里面的.env.prod文件的数据库账号和密码
 6. linux安装ngnix, 然后修改ngnix的配置文件(放在最下面), 然后重启ngnix
 7. 把阿里云安全端口 80,8001,3000端口都放开
-8. 检测服务是否正常 `curl -I http://114.55.91.77:3000/docs`
+8. 检测服务是否正常 `curl -I http://localhost:3000/docs`
 
 
 ## Ngnix 配置
