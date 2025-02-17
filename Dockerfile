@@ -6,13 +6,13 @@ COPY package*.json ./
 RUN npm  install
 
 COPY . .
-RUN pnpm run build
+RUN npm run build
 
 # 第二阶段：设置生产环境
 FROM node:alpine
 WORKDIR /app
 
-# 安装 pnpm 和 pm2
+# 安装  pm2
 RUN npm install -g  pm2
 
 COPY --from=builder /app/dist ./dist
