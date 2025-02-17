@@ -15,17 +15,17 @@ jobs:
 
       - name: Set up Docker Buildx (if needed)
         uses: docker/setup-buildx-action@v2
-        if: false  # 如果不需要 multi-platform builds, 可以省略此步骤
+        if: false # 如果不需要 multi-platform builds, 可以省略此步骤
 
       - name: Login to Alibaba Cloud Container Registry
         run: |
           echo "${{ secrets.ALIYUN_DOCKER_PASSWORD }}" | docker login --username ${{ secrets.ALIYUN_DOCKER_USERNAME }} --password-stdin crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com
 
       - name: Build Docker image
-        run: docker build -t crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser-server-nestjs:latest .
+        run: docker build -t crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser:latest .
 
       - name: Push Docker image
-        run: docker push crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser-server-nestjs:latest
+        run: docker push crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -39,23 +39,22 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            set -e  # 确保任何命令失败都会终止脚本
+            set -e
 
             echo "Logging into Alibaba Cloud Docker registry..."
             docker login --username ${{ secrets.ALIYUN_DOCKER_USERNAME }} --password ${{ secrets.ALIYUN_DOCKER_PASSWORD }} crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com
 
             echo "Stopping and removing existing container if exists..."
-            docker ps -q --filter "name=light-chaser-server" | grep -q . && docker stop light-chaser-server || echo "Container light-chaser-server is not running"
-            docker ps -a -q --filter "name=light-chaser-server" | grep -q . && docker rm light-chaser-server || echo "Container light-chaser-server does not exist"
+            docker ps -q --filter "name=light-chaser" | grep -q . && docker stop light-chaser || echo "Container light-chaser is not running"
+            docker ps -a -q --filter "name=light-chaser" | grep -q . && docker rm light-chaser || echo "Container light-chaser does not exist"
 
             echo "Removing old Docker image if exists..."
-            docker images -q crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser-server-nestjs:latest | grep -q . && docker rmi crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser-server-nestjs:latest || echo "Old image does not exist"
+            docker images -q crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser:latest | grep -q . && docker rmi crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser:latest || echo "Old image does not exist"
 
             echo "Pulling latest Docker image..."
-            docker pull crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser-server-nestjs:latest
-
+            docker pull crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser:latest
 
             echo "Running new container..."
-            docker run -d --name light-chaser-server -p 3000:3000 crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser-server-nestjs:latest
+            docker run -d --name light-chaser -v /root/nestguazai:/usr/app/guazai -p 3000:3000 crpi-nrc1eylr425ubrzn.cn-hangzhou.personal.cr.aliyuncs.com/kakajun/light-chaser:latest
 
             echo "Deployment completed successfully."

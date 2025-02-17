@@ -25,6 +25,17 @@ sqlite3 5.1.7
 ## 待处理问题
 1. 刷新404
 
+## 持续集成部署步骤
+1. 准备阿里云镜像仓库(免费)和Ecs服务器(收费)
+2. fock 项目, 在github的设置中,选择`Secrets and variables`中的`Actions`,然后在`Secrets`中点击`Add repository secret`添加`ALIYUN_DOCKER_PASSWORD`,`ALIYUN_DOCKER_USERNAME`,`SERVER_HOST`,`SERVER_SSH_KEY`,`SERVER_USERNAME`
+3. 修改`deploy.yml`文件,把自己的阿里镜像地址替换上去,  提交代码, 会触发workflows的`deploy.yml`文件
+4. docker 拉取mysql, 注意把`123456`换成自己的密码,  `docker run --name my-mysql -e MYSQL_ROOT_PASSWORD=123456 -p 3306:3306 -d mysql`
+5. 登陆ecs服务器修改/root/nestguazai 里面的.env.prod文件的数据库账号和密码
+6. linux安装ngnix, 然后修改ngnix的配置文件(放在最下面), 然后重启ngnix
+7. 把阿里云安全端口 80,8001,3000端口都放开
+8. 检测服务是否正常 `curl -I http://114.55.91.77:3000/docs`
+
+
 ## Ngnix 配置
 ```
 worker_processes  2;
@@ -61,12 +72,6 @@ http {
             add_header Cache-Control "no-store";
         }
         }
-
-        location /vue3-sketch-ruler/ {
-            index  index.html;
-            try_files $uri $uri/ /vue3-sketch-ruler/index.html;
-        }
-
 
         error_page   500 502 503 504  /50x.html;
         location = /50x.html {
