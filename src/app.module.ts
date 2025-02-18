@@ -9,7 +9,7 @@ import { ServeStaticModule } from '@nestjs/serve-static'
 // import { APP_GUARD } from '@nestjs/core'
 // import { JwtAuthGuard } from './common/guards/jwt-auth.grard'
 import { FileModule } from './module/file/file.module'
-import { LoggerService } from './module/monitor/logger/logger.service'
+import { LoggerModule } from './module/monitor/logger/logger.module'
 import { ProjectModule } from './module/project/project.module'
 import { UserModule } from './module/user/user.module'
 import { AxiosModule } from './module/axios/axios.module'
@@ -50,6 +50,7 @@ import { join } from 'path'
         }
       },
     }),
+    LoggerModule,
     AuthModule,
     FileModule,
     UserModule,
@@ -65,8 +66,7 @@ import { join } from 'path'
     //   provide: APP_GUARD,
     //   useClass: JwtAuthGuard,
     // },
-    LoggerService,
   ],
-  exports: [LoggerService], // 导出 LoggerService
+
 })
 export class AppModule {}

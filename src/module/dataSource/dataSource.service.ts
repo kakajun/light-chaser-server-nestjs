@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, DataSource } from 'typeorm'
 import { DataSourceEntity } from './entities/dataSource.entity'
 import { ListDataSourcetDto, CreateDataSourceDto } from './dto/dataSource.dto'
+import { LoggerService } from '@/module/monitor/logger/logger.service'
 
 @Injectable()
 export class DataSourceService {
   constructor(
     @InjectRepository(DataSourceEntity)
     private readonly datasourceRepository: Repository<DataSourceEntity>,
+    private readonly logger: LoggerService,
   ) {}
 
   async getDataSourceList(): Promise<DataSourceEntity[]> {
@@ -81,49 +83,68 @@ export class DataSourceService {
 
   async testDataSourceConnect(id: number): Promise<boolean> {
     if (id == null) {
-      return false
+      this.logger.error('测试数据源连接失败：ID不能为空');
+      return false;
     }
-    const datasource = await this.datasourceRepository.findOne({ where: { id } })
+    const datasource = await this.datasourceRepository.findOne({ where: { id } });
     if (datasource == null) {
-      return false
+      this.logger.error(`测试数据源连接失败：未找到ID为${id}的数据源`);
+      return false;
     }
 
-    let connection: DataSource
+    let connection: DataSource;
     try {
-      connection = await this.createConnection(datasource)
-      const queryRunner = connection.createQueryRunner()
-      await queryRunner.connect()
+      this.logger.info(`开始测试数据源连接，数据源信息：${JSON.stringify({
+        id: datasource.id,
+        name: datasource.name,
+        type: datasource.type,
+        url: datasource.url
+      })}`);
+
+      connection = await this.createConnection(datasource);
+      const queryRunner = connection.createQueryRunner();
+      await queryRunner.connect();
 
       if (datasource.type === 'oracle') {
-        await queryRunner.query('SELECT 1 FROM dual')
+        await queryRunner.query('SELECT 1 FROM dual');
       } else {
-        await queryRunner.query('SELECT 1')
+        await queryRunner.query('SELECT 1');
       }
-      await queryRunner.release()
+      await queryRunner.release();
+      
+      this.logger.info(`数据源连接测试成功，ID：${id}`);
+      return true;
     } catch (exception) {
-      console.error(exception.message, exception)
+      this.logger.error(`数据源连接测试失败，ID：${id}，错误信息：${exception.message}`, exception);
       if (connection) {
-        await connection.destroy()
+        await connection.destroy();
       }
-      throw new HttpException(`link failed: ${exception.message}`, 500)
+      throw new HttpException(`连接失败: ${exception.message}`, 500);
     }
-
-    return true
   }
 
   private async createConnection(datasource: CreateDataSourceDto): Promise<DataSource> {
-    const arrs = datasource.url.split(':')
-    if (arrs.length == 0) {
-      throw new HttpException('链接地址需要带端口号', 500)
+    try {
+      const arrs = datasource.url.split(':');
+      if (arrs.length < 2) {
+        const error = '链接地址需要带端口号';
+        this.logger.error(`创建数据源连接失败：${error}，URL：${datasource.url}`);
+        throw new HttpException(error, 500);
+      }
+
+      this.logger.debug(`正在创建数据源连接，host: ${arrs[0]}, port: ${arrs[1]}, database: ${datasource.name}`);
+      
+      return new DataSource({
+        type: 'mysql',
+        host: arrs[0],
+        port: Number(arrs[1]),
+        username: datasource.username,
+        password: datasource.password,
+        database: datasource.name,
+      }).initialize();
+    } catch (error) {
+      this.logger.error(`创建数据源连接失败：${error.message}`, error);
+      throw error;
     }
-    return new DataSource({
-      // type: datasource.type as 'mysql' | 'postgres' | 'oracle' | 'mssql', // 根据实际情况调整类型
-      type: 'mysql',
-      host: arrs[0],
-      port: Number(arrs[1]),
-      username: datasource.username,
-      password: datasource.password,
-      database: datasource.name,
-    }).initialize()
   }
 }

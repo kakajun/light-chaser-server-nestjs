@@ -11,6 +11,7 @@ import { join } from 'path'
 import { GenerateUUID } from '@/common/utils/index'
 import * as fs from 'fs' // 导入fs模块
 
+
 @Injectable()
 export class ProjectService {
   private readonly projectResourcePath: string
@@ -49,13 +50,22 @@ export class ProjectService {
     const savedProject = await this.projectRepository.save(project)
     return ResultData.ok(savedProject.id)
   }
-
   async deleteProject(id: number) {
     if (!id) return false
+    const project = await this.projectRepository.findOne({ where: { id } })
+    if (project && project.cover) {
+      const coverPath = join(this.projectResourcePath, this.coverPath, project.cover)
+      if (fs.existsSync(coverPath)) {
+        try {
+          await fs.promises.unlink(coverPath)
+        } catch (error) {
+          throw new HttpException('删除项目封面失败', 500)
+        }
+      }
+    }
     const result = await this.projectRepository.delete(id)
     return result.affected > 0 ? ResultData.ok() : ResultData.fail(500, '删除失败')
   }
-
   async copyProject(id: number) {
     if (!id) return null
     const project = await this.projectRepository.findOne({ where: { id } })
@@ -76,7 +86,6 @@ export class ProjectService {
     const data = await this.projectRepository.findOne({ where: { id } })
     return ResultData.ok(data)
   }
-
   async uploadCover(file: Express.Multer.File, id: number) {
     if (!id || !file) {
       throw new HttpException('参数错误', 500)
@@ -96,13 +105,14 @@ export class ProjectService {
     const existingProject = await this.projectRepository.findOne({
       where: { id, deleted: '0' },
     })
+    let oldFileName = ''
     if (existingProject && existingProject.cover) {
-      const oldFileName = existingProject.cover
+      oldFileName = existingProject.cover
 
       const oldAbsolutePath = join(this.projectResourcePath, this.coverPath, oldFileName)
       if (fs.existsSync(oldAbsolutePath)) {
         try {
-          await fs.promises.unlink(oldAbsolutePath) // 使用fs.promises.unlink异步删除文件
+          await fs.promises.unlink(oldAbsolutePath)
         } catch (error) {
           throw new HttpException('旧图片删除失败', 500)
         }
@@ -110,25 +120,26 @@ export class ProjectService {
     }
     const newFileName = `${GenerateUUID()}${suffix}`
     const uploadDir = join(this.projectResourcePath, this.coverPath)
-    if (!fs.existsSync(uploadDir)) {
-      const mkdirsResult = fs.mkdirSync(uploadDir, { recursive: true })
-      if (!mkdirsResult) {
-        throw new HttpException('封面目录创建失败', 500)
+    try {
+      if (!fs.existsSync(uploadDir)) {
+        await fs.promises.mkdir(uploadDir, { recursive: true })
       }
-    }
-    const destFile = join(uploadDir, newFileName)
-    // await file.mv(destFile)
-    fs.writeFileSync(destFile, file.buffer)
-    if (existingProject) {
-      existingProject.cover = newFileName
-      existingProject.updateTime = new Date()
-      await this.projectRepository.update(id, existingProject)
-    }
-    return ResultData.ok({
-      url: `${this.coverPath}${newFileName}`,
-    })
-  }
+      const destFile = join(uploadDir, newFileName)
+      await fs.promises.writeFile(destFile, file.buffer)
 
+      if (existingProject) {
+        existingProject.cover = newFileName
+        existingProject.updateTime = new Date()
+        await this.projectRepository.update(id, existingProject)
+      }
+
+      return ResultData.ok({
+        url: `${this.coverPath}${newFileName}`,
+      })
+    } catch (error) {
+      throw new HttpException('封面上传失败', 500)
+    }
+  }
   async getProjectPageList(pageParam: PageParam) {
     const entity = this.projectRepository
       .createQueryBuilder('entity')
