@@ -21,10 +21,14 @@ COPY --from=builder /app/guazai ./guazai
 # 设置 Nginx 环境
 FROM nginx:alpine
 COPY --from=frontend /usr/app/light-chaser /usr/share/nginx/html
-COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /usr/app/light-chaser/nginx.conf /etc/nginx/conf.d/default.conf
 
 # 暴露端口
 EXPOSE 3000 80
 
-# 启动后端应用
-CMD ["pm2-runtime", "dist/src/main.js"]
+# 启动脚本
+COPY ./start.sh /start.sh
+RUN chmod +x /start.sh
+
+# 启动Nginx和后端应用
+CMD ["/start.sh"]
