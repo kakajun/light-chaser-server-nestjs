@@ -10,16 +10,19 @@ RUN npm run build
 FROM ghcr.io/kakajun/light-chaser:134ce884005d60a0c4fdab12ea314dcfdf8c13d6 as frontend
 WORKDIR /usr/app/light-chaser
 
-# 第三阶段：设置生产环境
+
+# 设置 Nginx 环境
+FROM nginx:alpine as nginx_image
+COPY --from=frontend /usr/app/light-chaser /usr/share/nginx/html
+COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
+
+# 合并后端和 Nginx 环境
 FROM node:alpine
 WORKDIR /app
 RUN npm install -g pm2
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/guazai ./guazai
-
-# 设置 Nginx 环境
-FROM nginx:alpine
 COPY --from=frontend /usr/app/light-chaser /usr/share/nginx/html
 COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
 
@@ -27,8 +30,8 @@ COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 3000 80
 
 # 启动脚本
-COPY ./start.sh /start.sh
+COPY --from=builder /app/start.sh /start.sh
 RUN chmod +x /start.sh
 
-# 启动Nginx和后端应用
+# 启动 Nginx 和后端应用
 CMD ["/start.sh"]
