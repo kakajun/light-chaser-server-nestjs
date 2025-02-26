@@ -14,7 +14,7 @@ WORKDIR /usr/app/light-chaser
 # 设置 Nginx 环境
 FROM nginx:alpine as nginx_image
 COPY --from=frontend /usr/app/light-chaser /usr/share/nginx/html
-COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/default.conf /etc/nginx/conf.d/default.conf
 
 # 合并后端和 Nginx 环境
 FROM node:alpine
@@ -23,8 +23,7 @@ RUN npm install -g pm2
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/guazai ./guazai
-COPY --from=frontend /usr/app/light-chaser /usr/share/nginx/html
-COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
+
 
 # 暴露端口
 EXPOSE 3000 80
