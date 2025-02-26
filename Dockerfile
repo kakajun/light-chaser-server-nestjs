@@ -25,7 +25,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/guazai ./guazai
 
 # 从前端镜像复制静态文件
-COPY --from=frontend /usr/app/light-chaser/dist ./frontend
+COPY --from=frontend /usr/app/light-chaser ./frontend
 
 # 暴露端口
 EXPOSE 3000
