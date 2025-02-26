@@ -40,4 +40,6 @@ Typeorm 0.3.20
 7. 把阿里云安全端口 80,8001,3000端口都放开
 8. 检测服务是否正常 `curl -I http://localhost:3000/docs`
 
- 
+### 镜像一键安装
+
+docker pull ghcr.io/kakajun/light-chaser-server-nestjs:32d3cd960ac92b82e0bee2ea4ef0d73c8fb8c23b
