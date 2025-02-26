@@ -21,7 +21,7 @@ COPY --from=builder /app/guazai ./guazai
 # 设置 Nginx 环境
 FROM nginx:alpine
 COPY --from=frontend /usr/app/light-chaser /usr/share/nginx/html
-COPY --from=frontend /usr/app/light-chaser/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/nginx.conf /etc/nginx/conf.d/default.conf
 
 # 暴露端口
 EXPOSE 3000 80
