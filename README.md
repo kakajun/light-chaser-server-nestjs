@@ -44,4 +44,6 @@ Typeorm 0.3.20
 
 包含前端, 后端, ngnix
 
+[前端镜像源码地址](https://github.com/kakajun/light-chaser)  
+
 docker pull ghcr.io/kakajun/light-chaser-server-nestjs:32d3cd960ac92b82e0bee2ea4ef0d73c8fb8c23b
