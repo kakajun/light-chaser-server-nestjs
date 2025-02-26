@@ -13,7 +13,7 @@ FROM ghcr.io/kakajun/light-chaser:134ce884005d60a0c4fdab12ea314dcfdf8c13d6 as fr
 WORKDIR /usr/app/light-chaser
 
 # 第三阶段：设置生产环境
-FROM node:alpine
+FROM nginx:alpine
 WORKDIR /app
 
 # 安装 pm2
@@ -24,11 +24,15 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/guazai ./guazai
 
+
 # 从前端镜像复制静态文件
-COPY --from=frontend /usr/app/light-chaser ./frontend
+COPY --from=frontend /usr/app/light-chaser /usr/share/nginx/html
+
+#将nginx配置文件复制到/etc/nginx/conf.d/目录
+COPY --from=frontend /usr/app/light-chaser/nginx.conf /etc/nginx/conf.d/default.conf
 
 # 暴露端口
-EXPOSE 3000
+EXPOSE 3000 80
 
 # 启动后端应用
 CMD ["pm2-runtime", "dist/src/main.js"]
