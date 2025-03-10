@@ -6,31 +6,34 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# 第二阶段：拉取前端镜像
-FROM ghcr.io/kakajun/light-chaser:134ce884005d60a0c4fdab12ea314dcfdf8c13d6 as frontend
+# 第二阶段：拉取前端镜像,这里前端镜像改成你自己的
+FROM ghcr.io/kakajun/light-chaser:latest as frontend
 WORKDIR /usr/app/light-chaser
 
-
-# 设置 Nginx 环境
-FROM nginx:alpine as nginx_image
-COPY --from=frontend /usr/app/light-chaser /usr/share/nginx/html
-COPY --from=builder /app/default.conf /etc/nginx/conf.d/default.conf
-
-# 合并后端和 Nginx 环境
+# 第三阶段：设置 Nginx 和后端环境
 FROM node:alpine
 WORKDIR /app
-RUN npm install -g pm2
+
+# 安装 Nginx 和 PM2
+RUN apk add --no-cache nginx && npm install -g pm2
+
+# 复制前端文件
+COPY --from=frontend /usr/app/light-chaser /usr/share/nginx/html
+
+# 复制后端文件
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/guazai ./guazai
 
+# 复制 Nginx 配置文件
+COPY --from=builder /app/nginx.conf /etc/nginx/nginx.conf
 
-# 暴露端口
-EXPOSE 3000 80
-
-# 启动脚本
+# 复制启动脚本并设置权限
 COPY --from=builder /app/start.sh /start.sh
 RUN chmod +x /start.sh
+
+# 暴露端口
+EXPOSE 80 3000
 
 # 启动 Nginx 和后端应用
 CMD ["/start.sh"]

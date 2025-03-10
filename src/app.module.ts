@@ -46,7 +46,7 @@ import { join } from 'path'
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           synchronize: true, // 根据实体自动创建数据库表， 生产环境建议关闭
-          logging: true, // 添加此行以启用 SQL 日志
+          // logging: true, // 添加此行以启用 SQL 日志
         }
       },
     }),
