@@ -25,7 +25,7 @@
 
 [后端文档](http://114.55.91.77:3000/docs)
 
-[前端](http://114.55.91.77)
+[前端](http://114.55.91.77:7880)
 
 ## 持续集成部署步骤
 
@@ -60,6 +60,7 @@ light-chaser-server-nestjs:latest
 #### 启动 [localhost](http://localhost:8090/)
 
 #### 说明
+
 镜像包含前端, 后端, ngnix
 
 [前端镜像源码地址](https://github.com/kakajun/light-chaser)
