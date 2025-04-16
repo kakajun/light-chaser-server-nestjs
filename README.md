@@ -42,7 +42,7 @@
 
 包含前端, 后端, ngnix
 
- 
+
 
 docker pull ghcr.io/kakajun/light-chaser-server-nestjs:32d3cd960ac92b82e0bee2ea4ef0d73c8fb8c23b
 1. 拉取镜像`docker pull ghcr.io/kakajun/light-chaser-server-nestjs:latest`
