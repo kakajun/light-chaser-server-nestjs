@@ -11,7 +11,6 @@ import { mw as requestIpMw } from 'request-ip'
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
 
-  // 注册swagger
   const config = new DocumentBuilder()
     .setTitle('light-chaser-server-nestjs')
     .setDescription('light-chaser的后端接口文档')
