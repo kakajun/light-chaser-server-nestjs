@@ -9,7 +9,7 @@
 1. Nestjs 10
 2. Typeorm 0.3.20
 3. 开发sqlite3 5.1.7 正式: mysql
-4. docker 镜像构建
+4. docker 镜像构建 1
 
 本项目支持前端大屏项目 [light-chaser-server](https://github.com/xiaopujun/light-chaser)
 
@@ -42,9 +42,8 @@
 
 包含前端, 后端, ngnix
 
-
-
 docker pull ghcr.io/kakajun/light-chaser-server-nestjs:32d3cd960ac92b82e0bee2ea4ef0d73c8fb8c23b
+
 1. 拉取镜像`docker pull ghcr.io/kakajun/light-chaser-server-nestjs:latest`
 2. 创建目录 `mkdir /root/nestguazai`
 3. 创建容器
