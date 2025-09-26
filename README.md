@@ -9,7 +9,7 @@
 1. Nestjs 10
 2. Typeorm 0.3.20
 3. 开发sqlite3 5.1.7 正式: mysql
-4. docker 镜像构建 1
+4. docker 镜像构建
 
 本项目支持前端大屏项目 [light-chaser-server](https://github.com/xiaopujun/light-chaser)
 
