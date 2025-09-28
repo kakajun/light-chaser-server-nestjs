@@ -4,7 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import envConfig from '../config/env' // 导入 env.ts 文件
-import { AuthModule } from './module/system/auth/auth.module'
+// import { AuthModule } from './module/system/auth/auth.module'
 import { ServeStaticModule } from '@nestjs/serve-static'
 // import { APP_GUARD } from '@nestjs/core'
 // import { JwtAuthGuard } from './common/guards/jwt-auth.grard'
@@ -51,7 +51,7 @@ import { join } from 'path'
       },
     }),
     LoggerModule,
-    AuthModule,
+    //  AuthModule,
     FileModule,
     UserModule,
     ProjectModule,
@@ -67,6 +67,5 @@ import { join } from 'path'
     //   useClass: JwtAuthGuard,
     // },
   ],
-
 })
 export class AppModule {}

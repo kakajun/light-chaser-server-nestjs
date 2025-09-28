@@ -1,13 +1,13 @@
 import { Controller, Get } from '@nestjs/common'
 import { AppService } from './app.service'
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger'
-import { Public } from '@/common/public.decorator'
+// import { Public } from '@/common/public.decorator'
 
 @Controller('app')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Public()
+  // @Public()
   @ApiOperation({ summary: '这个是自动化测试脚本不用登录测试用' })
   @Get('')
   getHi(): string {
