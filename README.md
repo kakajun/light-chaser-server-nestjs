@@ -65,6 +65,6 @@ light-chaser-server-nestjs:latest
 
 #### 说明
 
-镜像包含前端, 后端, ngnix
+镜像包含前端, 后端, ngnix,1
 
 [前端镜像源码地址](https://github.com/kakajun/light-chaser)
