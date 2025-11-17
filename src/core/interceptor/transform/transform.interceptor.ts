@@ -11,27 +11,35 @@ export class TransformInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest()
     const { method, url, headers, body, query, params } = request
 
-    // 记录请求的基本信息
-    this.logger.log('请求信息:', {
+    const mask = (v: any) => {
+      if (!v || typeof v !== 'object') return v
+      const a = Array.isArray(v) ? [...v] : { ...v }
+      const keys = Object.keys(a)
+      for (const k of keys) {
+        const val = a[k]
+        if (typeof val === 'object' && val) a[k] = mask(val)
+        if (/authorization|password|token/i.test(k)) a[k] = '[redacted]'
+      }
+      return a
+    }
+
+    this.logger.log('request', {
       url,
       method,
-      headers,
-      body,
-      query,
-      params,
-      message: '请求信息',
+      headers: headers ? mask({ authorization: headers.authorization }) : undefined,
+      body: body ? mask(body) : undefined,
+      query: query ? mask(query) : undefined,
+      params: params ? mask(params) : undefined,
     })
 
     return next.handle().pipe(
       tap((data) => {
-        // 记录响应时间
         const responseTime = Date.now() - now
-        // 记录请求的响应时间和状态
-        this.logger.log('响应信息:', {
+        this.logger.log('response', {
           url,
           method,
           responseTime: `${responseTime}ms`,
-          statusCode: data?.statusCode || 200, // 默认 200 状态码
+          statusCode: data?.statusCode || 200,
           code: 0,
           msg: 'success',
         })

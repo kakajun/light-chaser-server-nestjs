@@ -1,7 +1,6 @@
-import { Column, CreateDateColumn, Entity, UpdateDateColumn } from 'typeorm'
+import { Column, CreateDateColumn, UpdateDateColumn } from 'typeorm'
 
 //基础实体信息
-@Entity()
 export abstract class BaseEntity {
   //0正常 1停用
   @Column({

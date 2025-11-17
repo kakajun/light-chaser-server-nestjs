@@ -11,6 +11,9 @@ import { mw as requestIpMw } from 'request-ip'
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
 
+  app.enableCors({ origin: true, credentials: true })
+  app.set('trust proxy', 1)
+
   const config = new DocumentBuilder()
     .setTitle('light-chaser-server-nestjs')
     .setDescription('light-chaser的后端接口文档')
@@ -28,8 +31,15 @@ async function bootstrap() {
   // 获取真实 ip
   app.use(requestIpMw({ attributeName: 'ip' }))
 
-  // 注册全局管道
-  app.useGlobalPipes(new ValidationPipe())
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+      validationError: { target: false },
+    }),
+  )
 
   // 支持静态资源
   app.useStaticAssets('public', { prefix: '/static' })

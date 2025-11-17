@@ -1,10 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { Injectable, HttpException } from '@nestjs/common'
 import { DataSource, Repository } from 'typeorm'
-import { InjectRepository } from '@nestjs/typeorm'
+import { InjectRepository, InjectDataSource } from '@nestjs/typeorm'
 import { DataSourceEntity } from '@/module/dataSource/entities/dataSource.entity'
 import { DbExecutorDto } from './dto/dbExecutor.dto'
 import { Base64Util } from '@/common/utils/base64Util'
-import { HttpException } from '@nestjs/common'
 import { LoggerService } from '@/module/monitor/logger/logger.service'
 
 @Injectable()
@@ -12,7 +11,7 @@ export class DbExecutorService {
   constructor(
     @InjectRepository(DataSourceEntity)
     private readonly datasourceRepository: Repository<DataSourceEntity>,
-    @Inject('DATA_SOURCE') // 假设你在模块中将 DataSource 注入为 'DATA_SOURCE'
+    @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly logger: LoggerService,
   ) {}
@@ -25,16 +24,19 @@ export class DbExecutorService {
         throw new HttpException('SQL语句不能为空', 400);
       }
 
-      // 解码并验证SQL
       const sql = Base64Util.decode(post.sql).trim();
       if (!sql) {
         throw new HttpException('SQL语句解码后为空', 400);
       }
 
-      // SQL注入防护：只允许SELECT语句
       const normalizedSql = sql.toLowerCase();
       if (!normalizedSql.startsWith('select')) {
         throw new HttpException('只允许执行SELECT语句', 403);
+      }
+      const illegal = /(update|insert|delete|alter|drop|truncate|create\s+|grant|revoke|outfile|dumpfile|into\s+|load\s+data)/i;
+      const hasTerminatorOrComment = /;|--|\/\*/.test(sql);
+      if (illegal.test(normalizedSql) || hasTerminatorOrComment) {
+        throw new HttpException('检测到潜在危险语句或注释/终止符', 400);
       }
 
       // 验证数据源
@@ -62,8 +64,7 @@ export class DbExecutorService {
       // 错误日志记录
       this.logger.error('SQL执行错误', {
         error: error.message,
-        stack: error.stack,
-        sql: post?.sql ? Base64Util.decode(post.sql) : 'INVALID SQL'
+        sql: post?.sql ? '[redacted]' : 'INVALID SQL'
       });
 
       // 错误分类处理
@@ -78,7 +79,7 @@ export class DbExecutorService {
           await queryRunner.release();
         } catch (releaseError) {
           this.logger.error('释放数据库连接失败', releaseError);
-        }
+      }
       }
     }
   }

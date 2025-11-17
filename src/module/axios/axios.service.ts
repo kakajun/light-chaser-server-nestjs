@@ -15,6 +15,8 @@ export class AxiosService {
       const IP_URL = 'https://whois.pconline.com.cn/ipJson.jsp'
       const response = await this.httpService.axiosRef(`${IP_URL}?ip=${ip}&json=true`, {
         responseType: 'arraybuffer',
+        timeout: 3000,
+        validateStatus: (status) => status === 200,
         transformResponse: [
           function (data) {
             const str = iconv.decode(data, 'gbk')
