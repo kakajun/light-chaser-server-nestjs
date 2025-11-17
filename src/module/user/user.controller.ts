@@ -1,7 +1,7 @@
 import { Body, Controller, Get, ParseIntPipe, Post, Query, Request } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-users.dto'
-// import { Public } from '@/common/public.decorator'
+import { Public } from '@/common/public.decorator'
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 import { ApiBearerAuth } from '@nestjs/swagger'
 import * as Useragent from 'useragent'
@@ -22,7 +22,7 @@ export class UserController {
    * @param username 姓名
    * @param password 密码
    */
-  // @Public()
+  @Public()
   @ApiOperation({ summary: '注册' })
   @Post('/signup')
   signup(@Body() signupData: CreateUserDto) {
@@ -34,7 +34,7 @@ export class UserController {
    * @param username 姓名
    * @param password 密码
    */
-  // @Public()
+  @Public()
   @ApiOperation({ summary: '登录' })
   @Post('/login')
   async login(@Body() loginData: CreateUserDto, @Request() req) {

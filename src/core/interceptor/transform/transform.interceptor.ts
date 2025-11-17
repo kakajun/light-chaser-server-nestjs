@@ -10,6 +10,7 @@ export class TransformInterceptor implements NestInterceptor {
     const now = Date.now()
     const request = context.switchToHttp().getRequest()
     const { method, url, headers, body, query, params } = request
+    const requestId = request.requestId
 
     const mask = (v: any) => {
       if (!v || typeof v !== 'object') return v
@@ -26,6 +27,7 @@ export class TransformInterceptor implements NestInterceptor {
     this.logger.log('request', {
       url,
       method,
+      requestId,
       headers: headers ? mask({ authorization: headers.authorization }) : undefined,
       body: body ? mask(body) : undefined,
       query: query ? mask(query) : undefined,
@@ -38,6 +40,7 @@ export class TransformInterceptor implements NestInterceptor {
         this.logger.log('response', {
           url,
           method,
+          requestId,
           responseTime: `${responseTime}ms`,
           statusCode: data?.statusCode || 200,
           code: 0,
@@ -45,13 +48,10 @@ export class TransformInterceptor implements NestInterceptor {
         })
       }),
 
-      // map((data) => {
-      //   return {
-      //     code: 0,
-      //     msg: 'success',
-      //     data,
-      //   }
-      // }),
+      map((data) => {
+        if (data && typeof data === 'object' && 'code' in data) return data
+        return { code: 200, msg: 'success', data }
+      }),
     )
   }
 }

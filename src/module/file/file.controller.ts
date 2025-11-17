@@ -31,7 +31,13 @@ export class FileController {
   })
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: multer.memoryStorage(), // 使用内存存储，不立即保存到文件系统
+      storage: multer.memoryStorage(),
+      limits: { fileSize: 5 * 1024 * 1024 },
+      fileFilter: (req, file, cb) => {
+        const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+        if (allowed.includes(file.mimetype)) cb(null, true)
+        else cb(new Error('不支持的文件类型'), false)
+      },
     }),
   )
   async uploadImage(@UploadedFile() file: Express.Multer.File, @Body('projectId') projectId: number) {

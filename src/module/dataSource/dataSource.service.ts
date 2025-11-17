@@ -125,26 +125,31 @@ export class DataSourceService {
 
   private async createConnection(datasource: CreateDataSourceDto): Promise<DataSource> {
     try {
-      const arrs = datasource.url.split(':');
-      if (arrs.length < 2) {
-        const error = '链接地址需要带端口号';
-        this.logger.error(`创建数据源连接失败：${error}，URL：${datasource.url}`);
-        throw new HttpException(error, 500);
+      const type = (datasource.type || 'mysql').toLowerCase()
+      if (type === 'sqlite') {
+        return new DataSource({ type: 'sqlite', database: datasource.name }).initialize()
       }
 
-      this.logger.debug(`正在创建数据源连接，host: ${arrs[0]}, port: ${arrs[1]}, database: ${datasource.name}`);
-      
-      return new DataSource({
-        type: 'mysql',
+      const arrs = (datasource.url || '').split(':')
+      if (arrs.length < 2) {
+        const error = '链接地址需要带端口号'
+        this.logger.error(`创建数据源连接失败：${error}，URL：${datasource.url}`)
+        throw new HttpException(error, 500)
+      }
+
+      this.logger.debug(`正在创建数据源连接，type: ${type}, host: ${arrs[0]}, port: ${arrs[1]}, database: ${datasource.name}`)
+      const config: any = {
+        type: type as any,
         host: arrs[0],
         port: Number(arrs[1]),
         username: datasource.username,
         password: datasource.password,
         database: datasource.name,
-      }).initialize();
+      }
+      return new DataSource(config).initialize()
     } catch (error) {
-      this.logger.error(`创建数据源连接失败：${error.message}`, error);
-      throw error;
+      this.logger.error(`创建数据源连接失败：${error.message}`, error)
+      throw error
     }
   }
 }

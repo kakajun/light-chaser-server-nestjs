@@ -14,6 +14,13 @@ async function bootstrap() {
   app.enableCors({ origin: true, credentials: true })
   app.set('trust proxy', 1)
 
+  app.use((req, res, next) => {
+    const id = Math.random().toString(16).slice(2) + Date.now().toString(16)
+    req.requestId = id
+    res.setHeader('X-Request-Id', id)
+    next()
+  })
+
   const config = new DocumentBuilder()
     .setTitle('light-chaser-server-nestjs')
     .setDescription('light-chaser的后端接口文档')
@@ -53,8 +60,8 @@ async function bootstrap() {
   // 注册全局错误的过滤器,包括日志记录
   app.useGlobalFilters(new HttpExceptionFilter(loggerService))
 
-  await app.listen(3000)
-  // 打印端口
-  console.log(`http://localhost:3000/docs`)
+  const port = Number(process.env.PORT) || 3000
+  await app.listen(port)
+  console.log(`http://localhost:${port}/docs`)
 }
 bootstrap()

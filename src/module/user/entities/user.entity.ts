@@ -1,6 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, Index, Unique } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, Index } from 'typeorm'
 import { BaseEntity } from '@/common/entities/base'
-import { Exclude, Expose } from 'class-transformer'
+import { Expose } from 'class-transformer'
 
 @Entity('sys_user', {
   comment: '用户信息表',

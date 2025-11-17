@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { JwtModule } from '@nestjs/jwt'
-import { jwtConstants } from '@/common/constants'
+import { ConfigModule, ConfigService } from '@nestjs/config'
 import { UserEntity } from './entities/user.entity'
 import { UserService } from './user.service'
 import { UserController } from './user.controller'
@@ -10,9 +10,14 @@ import { LoggerService } from '@/module/monitor/logger/logger.service'
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: jwtConstants.expiresIn },
+    ConfigModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        secret: config.get<string>('JWT_SECRET') || 'jiangKey',
+        signOptions: { expiresIn: config.get<string>('JWT_EXPIRES_IN') || '60000s' },
+      }),
     }),
   ],
   providers: [UserService, LoggerService],
