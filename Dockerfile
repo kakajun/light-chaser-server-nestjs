@@ -11,7 +11,7 @@ FROM ghcr.io/kakajun/light-chaser:latest as frontend
 WORKDIR /usr/app/light-chaser
 
 # 第三阶段：设置 Nginx 和后端环境
-FROM node:alpine
+FROM node:22-alpine
 WORKDIR /app
 
 # 安装 Nginx 和 PM2
