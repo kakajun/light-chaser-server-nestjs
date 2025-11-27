@@ -13,7 +13,10 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: npm i -g pnpm@8
+          cache-dependency-path: pnpm-lock.yaml
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8
       - run: pnpm -v
       - run: pnpm install
       - run: pnpm run build
