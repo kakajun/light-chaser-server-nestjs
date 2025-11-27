@@ -15,12 +15,9 @@ export class FileService {
   private readonly projectResourcePath: string
   private readonly sourceImagePath: string
   private readonly maxFileSize = 5 * 1024 * 1024 // 5MB
-  private readonly allowedMimeTypes = [
-    'image/jpeg',
-    'image/png',
-    'image/gif',
-    'image/webp'
-  ]
+  private readonly allowedMimeTypes = ['image/jpeg',
+    'image/png', 'image/gif',
+    'image/webp']
 
   constructor(
     @InjectRepository(FileEntity)
@@ -135,7 +132,7 @@ export class FileService {
 
       // 查找图片记录
       const image = await this.fileRepository.findOne({
-        where: { id: imageId, deleted: '0' }
+        where: { id: imageId, deleted: '0' },
       })
 
       if (!image) {

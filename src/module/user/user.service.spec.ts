@@ -15,7 +15,10 @@ describe('UserService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
-        { provide: getRepositoryToken(UserEntity), useValue: { findOne: jest.fn(), findOneBy: jest.fn(), save: jest.fn(), update: jest.fn(), delete: jest.fn() } },
+        {
+          provide: getRepositoryToken(UserEntity),
+          useValue: { findOne: jest.fn(), findOneBy: jest.fn(), save: jest.fn(), update: jest.fn(), delete: jest.fn() },
+        },
         { provide: JwtService, useValue: { sign: jest.fn(() => 'token') } },
       ],
     }).compile()
@@ -28,7 +31,10 @@ describe('UserService', () => {
   it('login success', async () => {
     const password = bcryptjs.hashSync('123456', 10)
     ;(repo.findOne as any).mockResolvedValue({ userId: 1, userName: 'a', password })
-    const res = await service.login({ userName: 'a', password: '123456' }, { ipaddr: '1.1.1.1', userAgent: '', browser: '', loginLocation: '' })
+    const res = await service.login(
+      { userName: 'a', password: '123456' },
+      { ipaddr: '1.1.1.1', userAgent: '', browser: '', loginLocation: '' },
+    )
     expect(jwt.sign).toHaveBeenCalled()
     expect(res.code).toBe(200)
     expect(typeof res.data).toBe('string')
@@ -36,7 +42,10 @@ describe('UserService', () => {
 
   it('login fail', async () => {
     ;(repo.findOne as any).mockResolvedValue({ userId: 1, userName: 'a', password: 'bad' })
-    const res = await service.login({ userName: 'a', password: '123456' }, { ipaddr: '1.1.1.1', userAgent: '', browser: '', loginLocation: '' })
+    const res = await service.login(
+      { userName: 'a', password: '123456' },
+      { ipaddr: '1.1.1.1', userAgent: '', browser: '', loginLocation: '' },
+    )
     expect(res.code).toBe(500)
   })
 })

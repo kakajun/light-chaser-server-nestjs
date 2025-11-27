@@ -83,43 +83,45 @@ export class DataSourceService {
 
   async testDataSourceConnect(id: number): Promise<boolean> {
     if (id == null) {
-      this.logger.error('测试数据源连接失败：ID不能为空');
-      return false;
+      this.logger.error('测试数据源连接失败：ID不能为空')
+      return false
     }
-    const datasource = await this.datasourceRepository.findOne({ where: { id } });
+    const datasource = await this.datasourceRepository.findOne({ where: { id } })
     if (datasource == null) {
-      this.logger.error(`测试数据源连接失败：未找到ID为${id}的数据源`);
-      return false;
+      this.logger.error(`测试数据源连接失败：未找到ID为${id}的数据源`)
+      return false
     }
 
-    let connection: DataSource;
+    let connection: DataSource
     try {
-      this.logger.info(`开始测试数据源连接，数据源信息：${JSON.stringify({
-        id: datasource.id,
-        name: datasource.name,
-        type: datasource.type,
-        url: datasource.url
-      })}`);
+      this.logger.info(
+        `开始测试数据源连接，数据源信息：${JSON.stringify({
+          id: datasource.id,
+          name: datasource.name,
+          type: datasource.type,
+          url: datasource.url,
+        })}`,
+      )
 
-      connection = await this.createConnection(datasource);
-      const queryRunner = connection.createQueryRunner();
-      await queryRunner.connect();
+      connection = await this.createConnection(datasource)
+      const queryRunner = connection.createQueryRunner()
+      await queryRunner.connect()
 
       if (datasource.type === 'oracle') {
-        await queryRunner.query('SELECT 1 FROM dual');
+        await queryRunner.query('SELECT 1 FROM dual')
       } else {
-        await queryRunner.query('SELECT 1');
+        await queryRunner.query('SELECT 1')
       }
-      await queryRunner.release();
-      
-      this.logger.info(`数据源连接测试成功，ID：${id}`);
-      return true;
+      await queryRunner.release()
+
+      this.logger.info(`数据源连接测试成功，ID：${id}`)
+      return true
     } catch (exception) {
-      this.logger.error(`数据源连接测试失败，ID：${id}，错误信息：${exception.message}`, exception);
+      this.logger.error(`数据源连接测试失败，ID：${id}，错误信息：${exception.message}`, exception)
       if (connection) {
-        await connection.destroy();
+        await connection.destroy()
       }
-      throw new HttpException(`连接失败: ${exception.message}`, 500);
+      throw new HttpException(`连接失败: ${exception.message}`, 500)
     }
   }
 
@@ -137,7 +139,9 @@ export class DataSourceService {
         throw new HttpException(error, 500)
       }
 
-      this.logger.debug(`正在创建数据源连接，type: ${type}, host: ${arrs[0]}, port: ${arrs[1]}, database: ${datasource.name}`)
+      this.logger.debug(
+        `正在创建数据源连接，type: ${type}, host: ${arrs[0]}, port: ${arrs[1]}, database: ${datasource.name}`,
+      )
       const config: any = {
         type: type as any,
         host: arrs[0],

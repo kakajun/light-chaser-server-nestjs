@@ -7,7 +7,10 @@ import { Public } from '@/common/public.decorator'
 
 @Controller('app')
 export class AppController {
-  constructor(private readonly appService: AppService, @InjectDataSource() private readonly dataSource: DataSource) { }
+  constructor(
+    private readonly appService: AppService,
+    @InjectDataSource() private readonly dataSource: DataSource,
+  ) {}
 
   @Public()
   @ApiOperation({ summary: '这个是自动化测试脚本不用登录测试用' })

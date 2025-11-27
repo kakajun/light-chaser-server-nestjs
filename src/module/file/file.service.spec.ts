@@ -8,7 +8,9 @@ import * as fs from 'fs'
 describe('FileService', () => {
   let service: FileService
   const repo = { findOne: jest.fn(), save: jest.fn(), create: jest.fn((v) => v) }
-  const config = { get: jest.fn((k) => (k === 'PROJECT_RESOURCE_PATH' ? 'tmp' : k === 'SOURCE_IMAGE_PATH' ? '/images/' : null)) }
+  const config = {
+    get: jest.fn((k) => (k === 'PROJECT_RESOURCE_PATH' ? 'tmp' : k === 'SOURCE_IMAGE_PATH' ? '/images/' : null)),
+  }
 
   beforeEach(async () => {
     jest.spyOn(fs.promises as any, 'mkdir').mockResolvedValue(undefined)

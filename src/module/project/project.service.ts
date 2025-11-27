@@ -11,7 +11,6 @@ import { join } from 'path'
 import { GenerateUUID } from '@/common/utils/index'
 import * as fs from 'fs' // 导入fs模块
 
-
 @Injectable()
 export class ProjectService {
   private readonly projectResourcePath: string
