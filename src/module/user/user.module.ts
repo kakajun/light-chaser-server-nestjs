@@ -16,7 +16,13 @@ import { LoggerService } from '@/module/monitor/logger/logger.service'
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({
         secret: config.get<string>('JWT_SECRET') || 'jiangKey',
-        signOptions: { expiresIn: config.get<string>('JWT_EXPIRES_IN') || '60000s' },
+        signOptions: {
+          expiresIn: (() => {
+            const raw = config.get<string>('JWT_EXPIRES_IN')
+            if (raw && /^\d+$/.test(raw)) return Number(raw)
+            return config.get<number>('JWT_EXPIRES_IN') ?? 600
+          })(),
+        },
       }),
     }),
   ],
