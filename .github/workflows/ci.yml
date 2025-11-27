@@ -13,8 +13,8 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: corepack enable
-      - run: corepack prepare pnpm@8.15.4 --activate
+      - run: npm i -g pnpm@8
+      - run: pnpm -v
       - run: pnpm install
       - run: pnpm run build
       - run: pnpm run lint
