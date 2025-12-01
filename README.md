@@ -67,4 +67,6 @@ light-chaser-server-nestjs:latest
 
 镜像包含前端, 后端, ngnix, 已更新到最新依赖
 
+加入简单登陆功能, 用户名: admin, 密码: admin
+
 [前端镜像源码地址](https://github.com/kakajun/light-chaser)
