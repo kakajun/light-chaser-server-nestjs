@@ -17,9 +17,29 @@
 
 ## 说明
 
-1. 目前NestJs工程不需要token验证, 如果需要可以把 `app.module.ts` 中的全局守卫打开
-2. 项目由于使用sqlite, 所以不需要连接其他数据库或redis, 装上依赖, 然后直接 `npm run dev` 即可
-3. 推送代码自动构建阿里云镜像
+1. 目前默认开启了全局鉴权，标注 `@Public()` 的接口无需令牌。需要保护的接口统一采用 Bearer Token 方案。
+2. 项目由于使用 sqlite，因此不需要连接其他数据库或 redis，安装依赖后直接 `npm run dev` 即可。
+3. 推送代码自动构建阿里云镜像。
+
+### 鉴权与令牌
+
+- 获取令牌：通过 `POST /api/users/login` 登录成功后返回字符串令牌。
+- 请求头格式：将令牌置于请求头 `Authorization: Bearer <token>`。
+- 免登录接口：如 `POST /api/users/signup`、`POST /api/users/login` 标注了 `@Public()`，无需令牌。
+
+示例：
+
+```bash
+curl -X GET "http://localhost:3000/api/users" \
+  -H "Authorization: Bearer <token>"
+```
+
+```ts
+// axios
+await axios.get('/api/users', {
+  headers: { Authorization: `Bearer ${token}` },
+})
+```
 
 ## 预览地址
 
